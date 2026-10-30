@@ -102,16 +102,29 @@ export function AdminProvider({
     }
   };
 
-  // Ambil data produk terbaru dari database Supabase (background revalidate)
+  // Ambil data produk terbaru dari API dengan HTTP Cache (ETag / 304 Not Modified)
   const refreshProducts = useCallback(async () => {
     try {
-      const data = await fetchProductsFromSupabase();
-      if (data) {
-        setProducts(data);
-        syncToCache(data);
+      const res = await fetch('/api/products');
+      if (res.status === 200) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setProducts(data);
+          syncToCache(data);
+        }
       }
+      // Bila status 304 (Not Modified), browser otomatis menggunakan data yang sudah ada tanpa re-render / tanpa beban data
     } catch (err) {
-      console.error('Failed to load products:', err);
+      // Fallback ke Supabase langsung jika API lokal gagal
+      try {
+        const data = await fetchProductsFromSupabase();
+        if (data && data.length > 0) {
+          setProducts(data);
+          syncToCache(data);
+        }
+      } catch (e) {
+        console.error('Failed to load products:', e);
+      }
     } finally {
       setIsLoading(false);
     }
