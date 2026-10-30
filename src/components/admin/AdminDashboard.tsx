@@ -106,13 +106,19 @@ export default function AdminDashboard() {
       <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-stone-200/80 px-4 sm:px-8 py-3.5 transition-all">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-stone-900 text-white flex items-center justify-center font-serif text-sm">
-              F
+            <div className="relative h-9 w-24">
+              <Image
+                src="/logo-transparent.png"
+                alt="Floréa Florist Logo"
+                fill
+                priority
+                className="object-contain object-left"
+              />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-serif font-medium text-stone-900 text-sm sm:text-base">
-                  Florea Atelier
+                  Florea Florist
                 </span>
                 <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-pink-50 text-[#E60067] border border-pink-200/60">
                   Katalog Manager

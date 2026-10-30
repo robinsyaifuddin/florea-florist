@@ -109,7 +109,7 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-500 text-center sm:text-left">
-          <p>© {new Date().getFullYear()} Florea Bouquet. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Florea Florist. All rights reserved.</p>
           <Link
             href="/admin"
             className="inline-flex items-center gap-1.5 text-stone-400 hover:text-stone-200 transition text-[11px]"

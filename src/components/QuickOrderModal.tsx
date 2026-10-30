@@ -32,7 +32,7 @@ export function QuickOrderModal({ product, onClose }: QuickOrderModalProps) {
     e.preventDefault();
 
     const phoneNumber = '62895705032933'; // Nomor CS Florist
-    const message = `*PESANAN BUKET FLOREA BOUQUET*
+    const message = `*PESANAN BUKET FLOREA FLORIST*
 
 • *Item*: ${product.name}
 • *Kategori*: ${getCategoryLabel(product)}

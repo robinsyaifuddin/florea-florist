@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Eye, Lock, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import Image from 'next/image';
+import { Eye, Lock, ArrowRight } from 'lucide-react';
 import { useAdmin } from '@/context/AdminContext';
 
 export default function AdminLogin() {
@@ -19,7 +20,7 @@ export default function AdminLogin() {
     setTimeout(() => {
       const ok = login(password);
       if (!ok) {
-        setErrorMsg('Kata sandi salah. Silakan coba: admin123');
+        setErrorMsg('Kata sandi salah. Silakan masukkan kata sandi yang benar.');
       }
       setIsLoading(false);
     }, 300);
@@ -30,11 +31,19 @@ export default function AdminLogin() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/* Brand Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-stone-900 text-white mb-3 shadow-xs">
-            <Sparkles className="w-5 h-5 text-pink-400" />
+          <div className="flex justify-center mb-3">
+            <div className="relative h-12 w-36">
+              <Image
+                src="/logo-transparent.png"
+                alt="Floréa Florist Logo"
+                fill
+                priority
+                className="object-contain"
+              />
+            </div>
           </div>
           <h2 className="text-2xl font-serif font-medium text-stone-900 tracking-tight">
-            Florea Atelier Admin
+            Florea Florist Admin
           </h2>
           <p className="mt-1 text-xs text-stone-500">
             Masuk untuk mengelola katalog mahakarya buket & floral
@@ -76,9 +85,6 @@ export default function AdminLogin() {
                   <Eye className="w-4 h-4" />
                 </button>
               </div>
-              <p className="mt-1.5 text-[11px] text-stone-400">
-                Default demo password: <code className="text-stone-700 font-semibold bg-stone-100 px-1 py-0.5 rounded">admin123</code>
-              </p>
             </div>
 
             {errorMsg && (
@@ -96,11 +102,6 @@ export default function AdminLogin() {
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
-
-          <div className="mt-6 pt-5 border-t border-stone-100 flex items-center justify-center gap-2 text-[11px] text-stone-400">
-            <ShieldCheck className="w-3.5 h-3.5 text-stone-400" />
-            <span>Tersimpan aman di browser lokal Anda</span>
-          </div>
         </div>
       </div>
     </div>

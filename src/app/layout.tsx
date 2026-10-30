@@ -46,7 +46,6 @@ export const metadata: Metadata = {
     'hadiah wisuda berkelas',
     'buket anniversary',
     'florea florist',
-    'florea bouquet',
   ],
   authors: [{ name: 'Floréa Florist' }],
   creator: 'Floréa Florist',
