@@ -136,44 +136,44 @@ export default function CollectionsClient() {
               </Link>
             </div>
 
-            {/* RINGKASAN JUMLAH KOLEKSI (Metric Cards) - Bulatan Angka Berwarna & Label di Bawah */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-8 pt-6 border-t border-pink-100">
+            {/* RINGKASAN JUMLAH KOLEKSI - Minimalis sebaris di Mobile, Card rapi di Desktop */}
+            <div className="grid grid-cols-4 gap-1.5 sm:gap-4 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-pink-100">
               {/* Total Koleksi */}
-              <div className="bg-pink-50/30 border border-pink-200/60 rounded-2xl p-4 sm:p-5 flex flex-col items-center text-center hover:border-pink-300 transition-colors">
-                <div className="w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center text-[#E60067] font-serif text-xl sm:text-2xl font-bold shadow-xs">
+              <div className="sm:bg-pink-50/30 sm:border sm:border-pink-200/60 sm:rounded-2xl py-1 sm:p-5 flex flex-col items-center text-center">
+                <span className="font-sans text-base sm:text-2xl font-bold text-[#E60067] leading-none">
                   {summaryMetrics.totalCount}
-                </div>
-                <span className="text-[11px] sm:text-xs font-medium uppercase tracking-wider text-stone-600 mt-2.5">
+                </span>
+                <span className="text-[9px] sm:text-xs font-semibold uppercase tracking-tight sm:tracking-wider text-[#E60067] mt-1 sm:mt-2.5 truncate max-w-full">
                   Total Koleksi
                 </span>
               </div>
 
               {/* Pilihan Favorit */}
-              <div className="bg-pink-50/30 border border-pink-200/60 rounded-2xl p-4 sm:p-5 flex flex-col items-center text-center hover:border-pink-300 transition-colors">
-                <div className="w-12 h-12 rounded-full bg-[#E60067] text-white flex items-center justify-center font-serif text-xl sm:text-2xl font-bold shadow-xs">
+              <div className="sm:bg-pink-50/30 sm:border sm:border-pink-200/60 sm:rounded-2xl py-1 sm:p-5 flex flex-col items-center text-center">
+                <span className="font-sans text-base sm:text-2xl font-bold text-[#E60067] leading-none">
                   {summaryMetrics.favoriteCount}
-                </div>
-                <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-[#E60067] mt-2.5">
-                  Pilihan Favorit
+                </span>
+                <span className="text-[9px] sm:text-xs font-semibold uppercase tracking-tight sm:tracking-wider text-[#E60067] mt-1 sm:mt-2.5 truncate max-w-full">
+                  Favorit
                 </span>
               </div>
 
               {/* Rangkaian Artistik */}
-              <div className="bg-pink-50/30 border border-pink-200/60 rounded-2xl p-4 sm:p-5 flex flex-col items-center text-center hover:border-pink-300 transition-colors">
-                <div className="w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center text-[#E60067] font-serif text-xl sm:text-2xl font-bold shadow-xs">
+              <div className="sm:bg-pink-50/30 sm:border sm:border-pink-200/60 sm:rounded-2xl py-1 sm:p-5 flex flex-col items-center text-center">
+                <span className="font-sans text-base sm:text-2xl font-bold text-[#E60067] leading-none">
                   {summaryMetrics.artisticCount}
-                </div>
-                <span className="text-[11px] sm:text-xs font-medium uppercase tracking-wider text-stone-600 mt-2.5">
+                </span>
+                <span className="text-[9px] sm:text-xs font-semibold uppercase tracking-tight sm:tracking-wider text-[#E60067] mt-1 sm:mt-2.5 truncate max-w-full">
                   Artistik
                 </span>
               </div>
 
               {/* Momen & Hadiah */}
-              <div className="bg-pink-50/30 border border-pink-200/60 rounded-2xl p-4 sm:p-5 flex flex-col items-center text-center hover:border-pink-300 transition-colors">
-                <div className="w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center text-[#E60067] font-serif text-xl sm:text-2xl font-bold shadow-xs">
+              <div className="sm:bg-pink-50/30 sm:border sm:border-pink-200/60 sm:rounded-2xl py-1 sm:p-5 flex flex-col items-center text-center">
+                <span className="font-sans text-base sm:text-2xl font-bold text-[#E60067] leading-none">
                   {summaryMetrics.celebrationCount + summaryMetrics.personalCount}
-                </div>
-                <span className="text-[11px] sm:text-xs font-medium uppercase tracking-wider text-stone-600 mt-2.5">
+                </span>
+                <span className="text-[9px] sm:text-xs font-semibold uppercase tracking-tight sm:tracking-wider text-[#E60067] mt-1 sm:mt-2.5 truncate max-w-full">
                   Momen & Hadiah
                 </span>
               </div>

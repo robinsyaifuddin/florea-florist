@@ -71,7 +71,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <Link
         href={`/product/${product.id}`}
         prefetch={true}
-        className="relative w-full aspect-[4/5] bg-stone-100 rounded-lg overflow-hidden mb-3 sm:mb-4 block outline-none select-none [-webkit-tap-highlight-color:transparent]"
+        className="relative w-full aspect-square bg-stone-100 rounded-lg overflow-hidden mb-3 sm:mb-4 block outline-none select-none [-webkit-tap-highlight-color:transparent]"
       >
         <Image
           src={product.image}
