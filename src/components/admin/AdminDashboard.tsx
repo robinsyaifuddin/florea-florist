@@ -14,7 +14,9 @@ import {
   Sparkles,
   Layers,
   SlidersHorizontal,
-  Check,
+  CheckCircle2,
+  AlertCircle,
+  Info,
   TrendingUp,
 } from 'lucide-react';
 import { useAdmin } from '@/context/AdminContext';
@@ -29,11 +31,11 @@ export default function AdminDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type?: 'success' | 'error' | 'info' } | null>(null);
 
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3200);
   };
 
   const handleOpenAddModal = () => {
@@ -50,14 +52,14 @@ export default function AdminDashboard() {
     try {
       if (editingProduct) {
         await updateProduct(editingProduct.id, productData);
-        showToast(`Berhasil memperbarui "${productData.name}" di Supabase`);
+        showToast(`Koleksi "${productData.name}" berhasil diperbarui`, 'success');
       } else {
         await addProduct(productData);
-        showToast(`Berhasil menambahkan mahakarya baru ke Supabase!`);
+        showToast(`Koleksi baru berhasil ditambahkan ke katalog`, 'success');
       }
       setIsModalOpen(false);
     } catch {
-      showToast('Terjadi kesalahan saat menyimpan ke Supabase');
+      showToast('Gagal menyimpan perubahan. Silakan coba lagi.', 'error');
     }
   };
 
@@ -65,9 +67,9 @@ export default function AdminDashboard() {
     try {
       await deleteProduct(id);
       setDeleteConfirmId(null);
-      showToast(`"${name}" telah dihapus dari Supabase.`);
+      showToast(`Koleksi "${name}" berhasil dihapus`, 'info');
     } catch {
-      showToast('Gagal menghapus produk dari Supabase.');
+      showToast('Gagal menghapus produk. Silakan coba lagi.', 'error');
     }
   };
 
@@ -94,11 +96,19 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-stone-50/70 text-stone-900 pb-20">
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-stone-900 text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-medium flex items-center gap-2 border border-stone-800 animate-in fade-in slide-in-from-bottom-2">
-          <Check className="w-3.5 h-3.5 text-emerald-400" />
-          <span>{toastMessage}</span>
+      {/* Toast Notification (Top Center / Pill Style) */}
+      {toast && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-200">
+          <div className="pointer-events-auto flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-stone-900/95 text-white backdrop-blur-md shadow-xl shadow-stone-950/15 border border-white/10 text-xs font-medium tracking-tight animate-in fade-in slide-in-from-top-3 duration-200">
+            {toast.type === 'error' ? (
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+            ) : toast.type === 'info' ? (
+              <Info className="w-4 h-4 text-sky-400 shrink-0" />
+            ) : (
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            )}
+            <span className="text-stone-100">{toast.message}</span>
+          </div>
         </div>
       )}
 
@@ -183,14 +193,14 @@ export default function AdminDashboard() {
               <TrendingUp className="w-4 h-4 text-emerald-600" />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-emerald-600">Supabase Connected</span>
+              <span className="text-xs font-medium text-emerald-600">Terhubung</span>
               <button
                 onClick={async () => {
                   await refreshProducts();
-                  showToast('Data berhasil di-refresh dari Supabase');
+                  showToast('Katalog berhasil disinkronkan', 'info');
                 }}
                 className="text-[11px] text-stone-500 hover:text-stone-800 flex items-center gap-1 hover:underline cursor-pointer"
-                title="Muat ulang data produk dari Supabase"
+                title="Muat ulang katalog produk"
               >
                 <RotateCcw className="w-3 h-3" /> Refresh
               </button>

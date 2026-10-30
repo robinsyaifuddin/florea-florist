@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { ChevronDown, Loader2 } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import Link from 'next/link';
+import { ChevronDown, Loader2, ArrowRight, Sparkles } from 'lucide-react';
 import { Product, getCategoryLabel } from '@/data/products';
 import { useAdmin } from '@/context/AdminContext';
 import { ProductCard } from '@/components/ProductCard';
@@ -28,19 +29,24 @@ export function ProductCatalog({
     { id: 'personal', label: 'Personalisasi & Hadiah' },
   ];
 
-  // Filter produk dari data Supabase yang ada di context
-  const filteredProducts = products.filter((item) => {
-    const label = getCategoryLabel(item);
-    const matchesCategory =
-      selectedCategory === 'all' || item.category === selectedCategory;
-    const matchesSearch =
-      !searchTerm ||
-      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.material.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      label.toLowerCase().includes(searchTerm.toLowerCase());
+  // Khusus section beranda ini: HANYA menampilkan produk favorit (isPopular === true)
+  const favoriteProducts = useMemo(() => {
+    return products.filter((item) => {
+      const isFav = Boolean(item.isPopular);
+      if (!isFav) return false;
 
-    return matchesCategory && matchesSearch;
-  });
+      const label = getCategoryLabel(item);
+      const matchesCategory =
+        selectedCategory === 'all' || item.category === selectedCategory;
+      const matchesSearch =
+        !searchTerm ||
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.material.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        label.toLowerCase().includes(searchTerm.toLowerCase());
+
+      return matchesCategory && matchesSearch;
+    });
+  }, [products, selectedCategory, searchTerm]);
 
   return (
     <section id="catalog" className="py-12 sm:py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -48,13 +54,13 @@ export function ProductCatalog({
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-5 mb-6 sm:mb-10 pb-5 border-b border-stone-200/80">
         <div>
           <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-[#E60067] block mb-1">
-            Galeri Sampel Eksklusif
+            Pilihan Favorit Pelanggan
           </span>
           <h2 className="text-2xl sm:text-3xl font-serif font-medium text-stone-900 tracking-tight">
-            Koleksi Rangkaian Mahakarya Abadi
+            Koleksi Rangkaian Mahakarya Favorit
           </h2>
           <p className="text-xs text-stone-500 mt-1 max-w-xl">
-            Pilihan desain berkarakter yang siap dikirim langsung atau disesuaikan dengan palet warna impian Anda. Elegan, prestisius, dan tak akan pernah layu.
+            Rangkaian buket paling digemari dengan detail presisi tinggi, siap dikirim langsung atau disesuaikan dengan palet warna impian Anda.
           </p>
         </div>
 
@@ -100,34 +106,58 @@ export function ProductCatalog({
       {isLoading ? (
         <div className="py-20 flex flex-col items-center justify-center gap-3">
           <Loader2 className="w-6 h-6 animate-spin text-[#E60067]" />
-          <p className="text-xs text-stone-500">Memuat koleksi mahakarya...</p>
+          <p className="text-xs text-stone-500">Memuat koleksi favorit...</p>
         </div>
-      ) : filteredProducts.length > 0 ? (
-        <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory scrollbar-none">
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="w-[calc((100vw-32px-12px)/2)] min-w-[150px] max-w-[210px] sm:w-auto sm:min-w-0 sm:max-w-none shrink-0 snap-start flex"
+      ) : favoriteProducts.length > 0 ? (
+        <>
+          <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory scrollbar-none">
+            {favoriteProducts.map((product) => (
+              <div
+                key={product.id}
+                className="w-[calc((100vw-32px-12px)/2)] min-w-[150px] max-w-[210px] sm:w-auto sm:min-w-0 sm:max-w-none shrink-0 snap-start flex"
+              >
+                <ProductCard
+                  product={product}
+                  onQuickView={(p) => setActiveModalProduct(p)}
+                  onOrderDirect={(p) => setActiveModalProduct(p)}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Tombol Lihat Semua Koleksi */}
+          <div className="mt-10 sm:mt-14 flex flex-col items-center justify-center text-center">
+            <Link
+              href="/collections"
+              className="group inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-stone-900 hover:bg-[#E60067] text-white text-xs sm:text-sm font-semibold rounded-xl shadow-xs transition-all duration-200 active:scale-[0.98]"
             >
-              <ProductCard
-                product={product}
-                onQuickView={(p) => setActiveModalProduct(p)}
-                onOrderDirect={(p) => setActiveModalProduct(p)}
-              />
-            </div>
-          ))}
-        </div>
+              <span>Lihat Semua Koleksi</span>
+              <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+            </Link>
+            <p className="mt-2.5 text-[11px] sm:text-xs text-stone-500">
+              Jelajahi seluruh variasi mahakarya floral Floréa yang tersedia
+            </p>
+          </div>
+        </>
       ) : (
         <div className="py-16 text-center border border-dashed border-stone-300 rounded-2xl p-6">
           <p className="text-stone-500 text-xs mb-3">
-            Tidak ada buket yang sesuai kata kunci pencarian.
+            Belum ada buket favorit yang sesuai dengan pilihan ini.
           </p>
-          <button
-            onClick={() => onCategoryChange('all')}
-            className="px-4 py-2 bg-stone-900 text-white rounded-lg text-xs font-semibold"
-          >
-            Tampilkan Semua Sampel
-          </button>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <button
+              onClick={() => onCategoryChange('all')}
+              className="px-4 py-2 bg-stone-900 text-white rounded-lg text-xs font-semibold hover:bg-stone-800 transition-colors"
+            >
+              Reset Kategori
+            </button>
+            <Link
+              href="/collections"
+              className="px-4 py-2 bg-[#E60067] text-white rounded-lg text-xs font-semibold hover:bg-[#c70058] transition-colors"
+            >
+              Buka Semua Koleksi
+            </Link>
+          </div>
         </div>
       )}
 
