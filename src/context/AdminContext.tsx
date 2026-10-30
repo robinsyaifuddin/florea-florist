@@ -7,7 +7,9 @@ import {
   createProduct as createProductInSupabase,
   updateProduct as updateProductInSupabase,
   deleteProduct as deleteProductInSupabase,
+  mapSupabaseToProduct,
 } from '@/lib/supabase/products';
+import { createClient } from '@/lib/supabase/client';
 
 interface AdminContextType {
   products: Product[];
@@ -68,6 +70,76 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     refreshProducts();
   }, [checkSession, refreshProducts]);
 
+  // Real-time synchronization via Supabase Realtime & Cross-tab BroadcastChannel
+  useEffect(() => {
+    // 1. Cross-tab Broadcast Channel (Sinkronisasi instan antar tab di browser yang sama tanpa jeda jaringan)
+    let channel: BroadcastChannel | null = null;
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      channel = new BroadcastChannel('florea_products_sync');
+      channel.onmessage = (event) => {
+        if (!event.data) return;
+        const { type, payload } = event.data;
+        if (type === 'ADD' && payload) {
+          setProducts((prev) => [payload, ...prev.filter((p) => p.id !== payload.id)]);
+        } else if (type === 'UPDATE' && payload) {
+          setProducts((prev) =>
+            prev.map((item) => (item.id === payload.id ? { ...item, ...payload } : item))
+          );
+        } else if (type === 'DELETE' && payload?.id) {
+          setProducts((prev) => prev.filter((item) => item.id !== payload.id));
+        } else if (type === 'REFRESH') {
+          refreshProducts();
+        }
+      };
+    }
+
+    // 2. Supabase Realtime Subscription (Sinkronisasi lintas device/browser)
+    const supabase = createClient();
+    const realtimeSubscription = supabase
+      .channel('realtime_products_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'products' },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            const newProduct = mapSupabaseToProduct(payload.new);
+            setProducts((prev) => [newProduct, ...prev.filter((p) => p.id !== newProduct.id)]);
+          } else if (payload.eventType === 'UPDATE') {
+            const updatedProduct = mapSupabaseToProduct(payload.new);
+            setProducts((prev) =>
+              prev.map((item) => (item.id === updatedProduct.id ? updatedProduct : item))
+            );
+          } else if (payload.eventType === 'DELETE') {
+            const deletedId = payload.old?.id;
+            if (deletedId) {
+              setProducts((prev) => prev.filter((item) => item.id !== deletedId));
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      if (channel) {
+        channel.close();
+      }
+      supabase.removeChannel(realtimeSubscription);
+    };
+  }, [refreshProducts]);
+
+  // Helper untuk broadcast ke tab lain
+  const notifyBroadcast = (type: 'ADD' | 'UPDATE' | 'DELETE' | 'REFRESH', payload?: any) => {
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      try {
+        const bc = new BroadcastChannel('florea_products_sync');
+        bc.postMessage({ type, payload });
+        bc.close();
+      } catch {
+        // Abaikan error broadcast channel jika tidak didukung
+      }
+    }
+  };
+
   // Login aman lewat API server
   const login = async (password: string): Promise<{ success: boolean; error?: string }> => {
     try {
@@ -106,12 +178,13 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // CRUD Supabase
+  // CRUD Supabase dengan update state lokal instan + sinkronisasi broadcast tab
   const addProduct = async (newProd: Omit<Product, 'id'>) => {
     try {
       const created = await createProductInSupabase(newProd);
       if (created) {
-        setProducts((prev) => [created, ...prev]);
+        setProducts((prev) => [created, ...prev.filter((p) => p.id !== created.id)]);
+        notifyBroadcast('ADD', created);
       }
     } catch (err) {
       console.error('Error adding product:', err);
@@ -126,6 +199,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         setProducts((prev) =>
           prev.map((item) => (item.id === id ? updated : item))
         );
+        notifyBroadcast('UPDATE', updated);
       }
     } catch (err) {
       console.error('Error updating product:', err);
@@ -137,6 +211,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     try {
       await deleteProductInSupabase(id);
       setProducts((prev) => prev.filter((item) => item.id !== id));
+      notifyBroadcast('DELETE', { id });
     } catch (err) {
       console.error('Error deleting product:', err);
       throw err;
