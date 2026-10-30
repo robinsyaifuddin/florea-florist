@@ -1,7 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Image as ImageIcon } from 'lucide-react';
 import { Product, getCategoryShortLabel } from '@/data/products';
 
 interface ProductCardProps {
@@ -11,6 +13,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   const formatPrice = (val: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -71,16 +75,32 @@ export function ProductCard({ product }: ProductCardProps) {
       <Link
         href={`/product/${product.id}`}
         prefetch={true}
-        className="relative w-full aspect-square bg-stone-100 rounded-lg overflow-hidden mb-3 sm:mb-4 block outline-none select-none [-webkit-tap-highlight-color:transparent]"
+        className="relative w-full aspect-square bg-stone-100 rounded-lg overflow-hidden mb-3 sm:mb-4 flex items-center justify-center outline-none select-none [-webkit-tap-highlight-color:transparent]"
       >
-        <Image
-          src={product.image}
-          alt={product.name}
-          fill
-          unoptimized
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
-          className="object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
-        />
+        {/* Placeholder shimmer saat lazy loading gambar berjalan */}
+        {product.image && !imageLoaded && (
+          <div className="absolute inset-0 skeleton-shimmer z-0" />
+        )}
+
+        {product.image ? (
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            loading="lazy"
+            decoding="async"
+            onLoad={() => setImageLoaded(true)}
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
+            className={`object-cover group-hover:scale-105 transition-all duration-300 ease-out z-1 ${
+              imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+            }`}
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center text-stone-300">
+            <ImageIcon className="w-10 h-10 stroke-[1.25]" />
+            <span className="text-[10px] text-stone-400 mt-1 font-sans">Belum ada foto</span>
+          </div>
+        )}
       </Link>
 
       {/* Info Rangkaian Buket */}

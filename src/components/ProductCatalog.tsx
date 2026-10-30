@@ -2,10 +2,11 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { ChevronDown, Loader2, ArrowRight, Sparkles } from 'lucide-react';
+import { ChevronDown, ArrowRight, Sparkles } from 'lucide-react';
 import { Product, getCategoryLabel } from '@/data/products';
 import { useAdmin } from '@/context/AdminContext';
 import { ProductCard } from '@/components/ProductCard';
+import { ProductCardSkeleton } from '@/components/ProductCardSkeleton';
 import { QuickOrderModal } from '@/components/QuickOrderModal';
 
 interface ProductCatalogProps {
@@ -102,11 +103,12 @@ export function ProductCatalog({
         </div>
       </div>
 
-      {/* Loading State */}
+      {/* Loading State Skeleton Modern */}
       {isLoading ? (
-        <div className="py-20 flex flex-col items-center justify-center gap-3">
-          <Loader2 className="w-6 h-6 animate-spin text-[#E60067]" />
-          <p className="text-xs text-stone-500">Memuat koleksi favorit...</p>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <ProductCardSkeleton key={i} />
+          ))}
         </div>
       ) : favoriteProducts.length > 0 ? (
         <>

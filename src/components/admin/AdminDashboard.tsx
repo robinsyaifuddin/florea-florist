@@ -19,6 +19,9 @@ import {
   PartyPopper,
   Gift,
   LayoutGrid,
+  Image as ImageIcon,
+  Star,
+  MoreVertical,
 } from 'lucide-react';
 import { useAdmin } from '@/context/AdminContext';
 import { Product, getCategoryLabel, getCategoryShortLabel } from '@/data/products';
@@ -42,6 +45,7 @@ export default function AdminDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type?: 'success' | 'error' | 'info' } | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
@@ -324,14 +328,18 @@ export default function AdminDashboard() {
                 >
                   {/* Left: Thumbnail & Concise Info */}
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <div className="relative w-12 h-12 sm:w-16 sm:h-16 rounded-lg overflow-hidden border border-stone-200 bg-stone-100 shrink-0">
-                      <Image
-                        src={p.image}
-                        alt={p.name}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
+                    <div className="relative w-12 h-12 sm:w-16 sm:h-16 rounded-lg overflow-hidden border border-stone-200 bg-stone-100 shrink-0 flex items-center justify-center">
+                      {p.image ? (
+                        <Image
+                          src={p.image}
+                          alt={p.name}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      ) : (
+                        <ImageIcon className="w-5 h-5 text-stone-300" />
+                      )}
                     </div>
 
                     <div className="min-w-0 flex-1">
@@ -340,8 +348,11 @@ export default function AdminDashboard() {
                           {getCategoryShortLabel(p)}
                         </span>
                         {p.isPopular && (
-                          <span className="text-[9px] uppercase font-semibold px-1 py-0.2 rounded bg-amber-50 text-amber-700 border border-amber-200 shrink-0">
-                            Favorit
+                          <span
+                            className="inline-flex items-center text-amber-500"
+                            title="Produk Favorit"
+                          >
+                            <Star className="w-3.5 h-3.5 fill-amber-400 stroke-amber-500" />
                           </span>
                         )}
                       </div>
@@ -363,49 +374,99 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
-                  {/* Right: Compact Actions */}
-                  <div className="flex items-center gap-1 shrink-0">
-                    <Link
-                      href={`/product/${p.id}`}
-                      target="_blank"
-                      className="p-2 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-lg transition"
-                      title="Lihat produk publik"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                    </Link>
-
+                  {/* Right: Actions Dropdown Menu */}
+                  <div className="relative shrink-0">
                     <button
-                      onClick={() => handleOpenEditModal(p)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-lg transition cursor-pointer active:scale-95"
-                      title="Sunting"
+                      type="button"
+                      onClick={() => {
+                        setActiveMenuId(activeMenuId === p.id ? null : p.id);
+                        setDeleteConfirmId(null);
+                      }}
+                      className={`p-2 rounded-lg transition cursor-pointer ${
+                        activeMenuId === p.id
+                          ? 'bg-stone-200 text-stone-900'
+                          : 'text-stone-500 hover:text-stone-800 hover:bg-stone-100'
+                      }`}
+                      title="Menu Aksi"
+                      aria-label="Menu Aksi"
                     >
-                      <Edit2 className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Edit</span>
+                      <MoreVertical className="w-4 h-4" />
                     </button>
 
-                    {deleteConfirmId === p.id ? (
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => handleDeleteProduct(p.id, p.name)}
-                          className="px-2 py-1 text-xs font-medium text-white bg-rose-600 hover:bg-rose-700 rounded-lg transition cursor-pointer"
-                        >
-                          Ya
-                        </button>
-                        <button
-                          onClick={() => setDeleteConfirmId(null)}
-                          className="px-2 py-1 text-xs text-stone-500 hover:bg-stone-100 rounded-lg transition cursor-pointer"
-                        >
-                          Batal
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => setDeleteConfirmId(p.id)}
-                        className="p-2 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
-                        title="Hapus"
-                      >
-                        <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                      </button>
+                    {activeMenuId === p.id && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-30"
+                          onClick={() => {
+                            setActiveMenuId(null);
+                            setDeleteConfirmId(null);
+                          }}
+                        />
+                        <div className="absolute right-0 top-full mt-1 w-44 bg-white rounded-xl border border-stone-200 shadow-lg z-40 py-1 overflow-hidden animate-in fade-in duration-150">
+                          {deleteConfirmId === p.id ? (
+                            <div className="p-2.5 space-y-2 bg-rose-50/50">
+                              <p className="text-[11px] font-medium text-stone-700 leading-tight">
+                                Hapus mahakarya ini?
+                              </p>
+                              <div className="flex items-center gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    handleDeleteProduct(p.id, p.name);
+                                    setActiveMenuId(null);
+                                    setDeleteConfirmId(null);
+                                  }}
+                                  className="flex-1 py-1 px-2 text-center text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-md transition cursor-pointer"
+                                >
+                                  Ya, Hapus
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setDeleteConfirmId(null)}
+                                  className="py-1 px-2 text-xs text-stone-600 hover:bg-stone-200/60 rounded-md transition cursor-pointer"
+                                >
+                                  Batal
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <Link
+                                href={`/product/${p.id}`}
+                                target="_blank"
+                                onClick={() => setActiveMenuId(null)}
+                                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-stone-700 hover:bg-stone-50 hover:text-stone-900 transition"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
+                                <span>Lihat Produk</span>
+                              </Link>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActiveMenuId(null);
+                                  handleOpenEditModal(p);
+                                }}
+                                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-stone-700 hover:bg-stone-50 hover:text-stone-900 transition text-left cursor-pointer"
+                              >
+                                <Edit2 className="w-3.5 h-3.5 text-stone-400" />
+                                <span>Edit Detail</span>
+                              </button>
+
+                              <div className="my-1 border-t border-stone-100" />
+
+                              <button
+                                type="button"
+                                onClick={() => setDeleteConfirmId(p.id)}
+                                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-rose-600 hover:bg-rose-50 transition text-left cursor-pointer"
+                              >
+                                <Trash2 className="w-3.5 h-3.5 text-rose-500" />
+                                <span>Hapus Mahakarya</span>
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </>
                     )}
                   </div>
                 </div>

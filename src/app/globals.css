@@ -31,6 +31,14 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Prevent unwanted mobile browser callouts & drag menus on product images */
+img, .no-callout {
+  -webkit-touch-callout: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-user-drag: none !important;
+}
+
 /* Micro-interaction physics easing */
 .ease-tactile {
   transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
@@ -138,6 +146,17 @@ html {
   100% {
     background-position: 200% 0;
   }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    #f5f5f4 0%,
+    #e7e5e4 50%,
+    #f5f5f4 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .animate-float-slow {

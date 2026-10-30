@@ -12,7 +12,8 @@ import {
   ChevronRight,
   ShieldCheck,
   Clock,
-  ArrowLeft
+  ArrowLeft,
+  Image as ImageIcon
 } from 'lucide-react';
 import { Product, getCategoryLabel, getCategoryShortLabel } from '@/data/products';
 import { ProductCard } from '@/components/ProductCard';
@@ -37,18 +38,28 @@ export default function ProductDetailClient({
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
     setZoomPosition({ x, y });
+  };
+
+  const updateTouchPosition = (touch: React.Touch, element: HTMLElement) => {
+    const rect = element.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((touch.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((touch.clientY - rect.top) / rect.height) * 100));
+    setZoomPosition({ x, y });
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    setIsZoomed(true);
+    if (e.touches.length > 0) {
+      updateTouchPosition(e.touches[0], e.currentTarget);
+    }
   };
 
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
     if (e.touches.length > 0) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const touch = e.touches[0];
-      const x = Math.max(0, Math.min(100, ((touch.clientX - rect.left) / rect.width) * 100));
-      const y = Math.max(0, Math.min(100, ((touch.clientY - rect.top) / rect.height) * 100));
-      setZoomPosition({ x, y });
+      updateTouchPosition(e.touches[0], e.currentTarget);
     }
   };
 
@@ -135,31 +146,50 @@ Mohon konfirmasi ketersediaan slot rangkaian dan jadwal pengirimannya. Terima ka
         {/* Left Column: Single Main Showcase Image (5 cols desktop, clean & focused) */}
         <div className="md:col-span-5 flex flex-col max-w-sm mx-auto md:max-w-none w-full">
           <div
+            onContextMenu={(e) => e.preventDefault()}
             onMouseEnter={() => setIsZoomed(true)}
             onMouseLeave={() => setIsZoomed(false)}
             onMouseMove={handleMouseMove}
-            onTouchStart={() => setIsZoomed(true)}
+            onTouchStart={handleTouchStart}
             onTouchEnd={() => setIsZoomed(false)}
+            onTouchCancel={() => setIsZoomed(false)}
             onTouchMove={handleTouchMove}
+            style={{
+              touchAction: 'none',
+              WebkitTouchCallout: 'none',
+              userSelect: 'none',
+            }}
             className="relative w-full aspect-[4/3] sm:aspect-square md:max-h-[380px] lg:max-h-[400px] bg-stone-100 rounded-2xl overflow-hidden border border-stone-200/80 shadow-2xs group cursor-crosshair select-none"
           >
-            <div
-              className="relative w-full h-full transition-transform duration-150 ease-out"
-              style={{
-                transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
-                transform: isZoomed ? 'scale(2.1)' : 'scale(1)',
-              }}
-            >
-              <Image
-                src={product.image}
-                alt={product.name}
-                fill
-                priority
-                unoptimized
-                sizes="(max-width: 768px) 100vw, 400px"
-                className="object-cover"
-              />
-            </div>
+            {product.image ? (
+              <div
+                className="relative w-full h-full transition-transform duration-100 ease-out pointer-events-none select-none"
+                style={{
+                  transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                  transform: isZoomed ? 'scale(2.2)' : 'scale(1)',
+                }}
+              >
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  priority
+                  unoptimized
+                  draggable={false}
+                  sizes="(max-width: 768px) 100vw, 400px"
+                  className="object-cover select-none pointer-events-none"
+                  style={{
+                    WebkitTouchCallout: 'none',
+                    userSelect: 'none',
+                  }}
+                />
+              </div>
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center text-stone-300">
+                <ImageIcon className="w-16 h-16 stroke-[1.25]" />
+                <span className="text-xs text-stone-400 mt-2 font-sans">Belum ada foto produk</span>
+              </div>
+            )}
 
             {/* Badge Populer / Favorit */}
             {product.isPopular && (

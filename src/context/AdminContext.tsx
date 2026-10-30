@@ -27,9 +27,34 @@ interface AdminContextType {
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export function AdminProvider({ children }: { children: ReactNode }) {
-  // Hanya gunakan data riil dari Supabase (bila kosong, murni kosong tanpa fallback ke fiktif/dummy)
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  // Inisialisasi awal produk dari cache browser (LocalStorage SWR) untuk rendering instan (<10ms)
+  const [products, setProducts] = useState<Product[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('florea_cached_products');
+        if (cached) {
+          return JSON.parse(cached);
+        }
+      } catch {
+        // Abaikan kegagalan baca cache
+      }
+    }
+    return [];
+  });
+
+  const [isLoading, setIsLoading] = useState<boolean>(() => {
+    // Jika sudah ada data di cache, kita tidak memblokir render
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('florea_cached_products');
+        if (cached && JSON.parse(cached).length > 0) {
+          return false;
+        }
+      } catch {}
+    }
+    return true;
+  });
+
   const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
@@ -51,12 +76,25 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Ambil data produk terbaru dari database Supabase
+  // Helper sinkronisasi ke localStorage
+  const syncToCache = (data: Product[]) => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('florea_cached_products', JSON.stringify(data));
+      } catch {
+        // Abaikan kuota limit
+      }
+    }
+  };
+
+  // Ambil data produk terbaru dari database Supabase (background revalidate)
   const refreshProducts = useCallback(async () => {
     try {
       const data = await fetchProductsFromSupabase();
-      // Set sesuai hasil database, jika kosong maka menjadi array kosong []
-      setProducts(data || []);
+      if (data) {
+        setProducts(data);
+        syncToCache(data);
+      }
     } catch (err) {
       console.error('Failed to load products:', err);
     } finally {
@@ -79,13 +117,23 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         if (!event.data) return;
         const { type, payload } = event.data;
         if (type === 'ADD' && payload) {
-          setProducts((prev) => [payload, ...prev.filter((p) => p.id !== payload.id)]);
+          setProducts((prev) => {
+            const next = [payload, ...prev.filter((p) => p.id !== payload.id)];
+            syncToCache(next);
+            return next;
+          });
         } else if (type === 'UPDATE' && payload) {
-          setProducts((prev) =>
-            prev.map((item) => (item.id === payload.id ? { ...item, ...payload } : item))
-          );
+          setProducts((prev) => {
+            const next = prev.map((item) => (item.id === payload.id ? { ...item, ...payload } : item));
+            syncToCache(next);
+            return next;
+          });
         } else if (type === 'DELETE' && payload?.id) {
-          setProducts((prev) => prev.filter((item) => item.id !== payload.id));
+          setProducts((prev) => {
+            const next = prev.filter((item) => item.id !== payload.id);
+            syncToCache(next);
+            return next;
+          });
         } else if (type === 'REFRESH') {
           refreshProducts();
         }
@@ -102,16 +150,26 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         (payload) => {
           if (payload.eventType === 'INSERT') {
             const newProduct = mapSupabaseToProduct(payload.new);
-            setProducts((prev) => [newProduct, ...prev.filter((p) => p.id !== newProduct.id)]);
+            setProducts((prev) => {
+              const next = [newProduct, ...prev.filter((p) => p.id !== newProduct.id)];
+              syncToCache(next);
+              return next;
+            });
           } else if (payload.eventType === 'UPDATE') {
             const updatedProduct = mapSupabaseToProduct(payload.new);
-            setProducts((prev) =>
-              prev.map((item) => (item.id === updatedProduct.id ? updatedProduct : item))
-            );
+            setProducts((prev) => {
+              const next = prev.map((item) => (item.id === updatedProduct.id ? updatedProduct : item));
+              syncToCache(next);
+              return next;
+            });
           } else if (payload.eventType === 'DELETE') {
             const deletedId = payload.old?.id;
             if (deletedId) {
-              setProducts((prev) => prev.filter((item) => item.id !== deletedId));
+              setProducts((prev) => {
+                const next = prev.filter((item) => item.id !== deletedId);
+                syncToCache(next);
+                return next;
+              });
             }
           }
         }
@@ -182,7 +240,11 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     try {
       const created = await createProductInSupabase(newProd);
       if (created) {
-        setProducts((prev) => [created, ...prev.filter((p) => p.id !== created.id)]);
+        setProducts((prev) => {
+          const next = [created, ...prev.filter((p) => p.id !== created.id)];
+          syncToCache(next);
+          return next;
+        });
         notifyBroadcast('ADD', created);
       }
     } catch (err) {
@@ -192,26 +254,44 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   };
 
   const updateProduct = async (id: string, updatedFields: Partial<Product>) => {
+    // 1. Optimistic Update instan di antarmuka (0 latency)
+    setProducts((prev) => {
+      const next = prev.map((item) => (item.id === id ? { ...item, ...updatedFields } : item));
+      syncToCache(next);
+      return next;
+    });
+
     try {
       const updated = await updateProductInSupabase(id, updatedFields);
       if (updated) {
-        setProducts((prev) =>
-          prev.map((item) => (item.id === id ? updated : item))
-        );
+        setProducts((prev) => {
+          const next = prev.map((item) => (item.id === id ? updated : item));
+          syncToCache(next);
+          return next;
+        });
         notifyBroadcast('UPDATE', updated);
       }
     } catch (err) {
+      // Revert bila terjadi kegagalan jaringan
+      refreshProducts();
       console.error('Error updating product:', err);
       throw err;
     }
   };
 
   const deleteProduct = async (id: string) => {
+    // Optimistic Delete instan
+    setProducts((prev) => {
+      const next = prev.filter((item) => item.id !== id);
+      syncToCache(next);
+      return next;
+    });
+
     try {
       await deleteProductInSupabase(id);
-      setProducts((prev) => prev.filter((item) => item.id !== id));
       notifyBroadcast('DELETE', { id });
     } catch (err) {
+      refreshProducts();
       console.error('Error deleting product:', err);
       throw err;
     }

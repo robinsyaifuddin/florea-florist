@@ -16,6 +16,7 @@ import {
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { ProductCard } from '@/components/ProductCard';
+import { ProductCardSkeleton } from '@/components/ProductCardSkeleton';
 import { QuickOrderModal } from '@/components/QuickOrderModal';
 import { useAdmin } from '@/context/AdminContext';
 import { Product, getCategoryLabel } from '@/data/products';
@@ -262,9 +263,10 @@ export default function CollectionsClient() {
 
           {/* Catalog Cards Grid */}
           {isLoading ? (
-            <div className="py-24 flex flex-col items-center justify-center gap-3">
-              <Loader2 className="w-7 h-7 animate-spin text-[#E60067]" />
-              <p className="text-xs text-stone-500">Menyiapkan seluruh galeri koleksi...</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                <ProductCardSkeleton key={i} />
+              ))}
             </div>
           ) : filteredProducts.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">

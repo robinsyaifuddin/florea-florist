@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Image from 'next/image';
-import { X, Upload, Image as ImageIcon } from 'lucide-react';
+import { X, Upload, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { Product, CATEGORY_LABELS } from '@/data/products';
 
 interface ProductFormModalProps {
@@ -37,13 +37,42 @@ export default function ProductFormModal({
   );
 
   // Gallery & Image Upload
-  const defaultImage =
-    initialProduct?.image ||
-    'https://images.unsplash.com/photo-1533616688419-b7a585564566?auto=format&fit=crop&w=900&q=85';
-  const [mainImage, setMainImage] = useState(defaultImage);
+  const [mainImage, setMainImage] = useState(initialProduct?.image || '');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Helper konversi file/blob gambar ke format WebP berkualitas tinggi tanpa merusak detail
+  const convertToWebP = (blob: Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new (window as any).Image();
+      const objectUrl = URL.createObjectURL(blob);
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth || img.width;
+        canvas.height = img.naturalHeight || img.height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Canvas context tidak tersedia'));
+          return;
+        }
+        // Gambarkan piksel dengan rendering berkualitas tinggi
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0);
+
+        // Export ke WebP kualitas tinggi (0.92: sangat tajam, ringan & lossless-like)
+        const webpDataUrl = canvas.toDataURL('image/webp', 0.92);
+        resolve(webpDataUrl);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error('Gagal memuat gambar ke canvas'));
+      };
+      img.src = objectUrl;
+    });
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -74,7 +103,7 @@ export default function ProductFormModal({
     setIsProcessing(true);
 
     try {
-      let imageBlob: Blob = file;
+      let sourceBlob: Blob = file;
 
       if (isHeic) {
         // Konversi format iPhone HEIC/HEIF ke JPEG HD berkualitas tinggi (0.95)
@@ -84,9 +113,16 @@ export default function ProductFormModal({
           toType: 'image/jpeg',
           quality: 0.95,
         });
-        imageBlob = Array.isArray(converted) ? converted[0] : converted;
+        sourceBlob = Array.isArray(converted) ? converted[0] : converted;
       }
 
+      // Konversi otomatis semua format gambar ke WebP HD (0.92) tanpa merusak ketajaman
+      const webpResult = await convertToWebP(sourceBlob);
+      setMainImage(webpResult);
+      setIsProcessing(false);
+    } catch (err: any) {
+      console.error('Error converting image to WebP:', err);
+      // Fallback: baca langsung jika browser sangat lama tidak mendukung canvas WebP
       const reader = new FileReader();
       reader.onload = () => {
         if (typeof reader.result === 'string') {
@@ -98,10 +134,7 @@ export default function ProductFormModal({
         setUploadError('Gagal memproses gambar. Silakan coba lagi.');
         setIsProcessing(false);
       };
-      reader.readAsDataURL(imageBlob);
-    } catch (err: any) {
-      setUploadError('Gagal mengonversi foto HEIC. Pastikan file tidak korup.');
-      setIsProcessing(false);
+      reader.readAsDataURL(file);
     }
   };
 
@@ -154,8 +187,8 @@ export default function ProductFormModal({
       isPopular,
       material,
       durability,
-      image: mainImage,
-      gallery: [mainImage],
+      image: mainImage || '',
+      gallery: mainImage ? [mainImage] : [],
       description,
       sizes,
       details: {
@@ -343,7 +376,7 @@ export default function ProductFormModal({
                   className="hidden"
                 />
 
-                <div>
+                <div className="flex items-center gap-2">
                   <button
                     type="button"
                     disabled={isProcessing}
@@ -351,8 +384,24 @@ export default function ProductFormModal({
                     className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-stone-900 hover:bg-stone-800 disabled:opacity-50 text-white text-xs font-medium shadow-xs transition active:scale-[0.98] cursor-pointer"
                   >
                     <Upload className="w-3.5 h-3.5" />
-                    <span>{isProcessing ? 'Memproses...' : 'Upload Gambar'}</span>
+                    <span>{isProcessing ? 'Memproses...' : mainImage ? 'Ganti Gambar' : 'Upload Gambar'}</span>
                   </button>
+
+                  {mainImage && (
+                    <button
+                      type="button"
+                      disabled={isProcessing}
+                      onClick={() => {
+                        setMainImage('');
+                        if (fileInputRef.current) fileInputRef.current.value = '';
+                      }}
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-stone-200 text-stone-600 hover:text-red-600 hover:bg-red-50 text-xs font-medium transition cursor-pointer"
+                      title="Hapus gambar saat ini"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Hapus</span>
+                    </button>
+                  )}
                 </div>
 
                 <p className="text-[10px] text-stone-400">

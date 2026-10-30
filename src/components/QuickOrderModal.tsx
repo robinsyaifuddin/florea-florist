@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Send, Sparkles, Clock, ShieldCheck, HeartHandshake } from 'lucide-react';
+import { X, Send, Sparkles, Clock, ShieldCheck, HeartHandshake, Image as ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import { Product, getCategoryLabel } from '@/data/products';
 
@@ -84,8 +84,12 @@ Mohon konfirmasi ketersediaan slot rangkaian untuk jadwal di atas. Terima kasih!
         <div className="p-6 overflow-y-auto space-y-5">
           {/* Item Preview Card */}
           <div className="flex gap-4 p-3.5 bg-stone-50 rounded-xl border border-stone-200/80 items-center">
-            <div className="relative w-16 h-20 rounded-lg overflow-hidden shrink-0 bg-stone-200">
-              <Image src={product.image} alt={product.name} fill unoptimized className="object-cover" />
+            <div className="relative w-16 h-20 rounded-lg overflow-hidden shrink-0 bg-stone-200 flex items-center justify-center">
+              {product.image ? (
+                <Image src={product.image} alt={product.name} fill unoptimized className="object-cover" />
+              ) : (
+                <ImageIcon className="w-6 h-6 text-stone-400" />
+              )}
             </div>
             <div className="flex-grow">
               <span className="text-[10px] uppercase tracking-wider text-rose-800 font-semibold">
