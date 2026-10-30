@@ -65,11 +65,10 @@ export function Navbar({ onSearchChange, activeCategory = 'all', onSelectCategor
               href="https://wa.me/62895705032933?text=Halo%20Flor%C3%A9a%20Florist,%20saya%20ingin%20konsultasi%20pemesanan%20buket"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-[#E60067] hover:bg-[#CC005A] text-white text-[11px] sm:text-xs font-semibold tracking-wide transition-all duration-150 active:scale-[0.98] shadow-sm whitespace-nowrap"
+              className="inline-flex items-center justify-center px-4 sm:px-5 py-2 rounded-full bg-[#E60067] hover:bg-[#CC005A] text-white text-[11px] sm:text-xs font-semibold tracking-wide transition-all duration-150 active:scale-[0.98] shadow-sm whitespace-nowrap"
             >
               <span>Konsultasi</span>
-              <span className="hidden sm:inline">Eksklusif</span>
-              <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-80" />
+              <span className="hidden sm:inline">&nbsp;Eksklusif</span>
             </a>
           </div>
         </div>

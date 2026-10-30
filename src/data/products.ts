@@ -42,6 +42,10 @@ export function getCategoryLabel(product: { category: Product['category']; categ
   return product.categoryLabel || CATEGORY_LABELS[product.category] || 'Pesona Puspa Abadi (Koleksi Buket Bunga Artistik)';
 }
 
+export function getCategoryShortLabel(product: { category: Product['category'] }): string {
+  return CATEGORY_SHORT_LABELS[product.category] || 'Koleksi Bunga';
+}
+
 export const PRODUCTS: Product[] = [
   {
     id: 'blush-silk-peony',

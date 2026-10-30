@@ -23,9 +23,7 @@ export default function Home() {
       <main className="flex-grow">
         <HeroSection />
 
-        <CategoryBento
-          onSelectCategory={(cat) => setSelectedCategory(cat)}
-        />
+        <CategoryBento />
 
         <ProductCatalog
           selectedCategory={selectedCategory}

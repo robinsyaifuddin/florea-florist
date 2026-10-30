@@ -1,17 +1,15 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import {
   Search,
   Filter,
-  Sparkles,
+  ArrowUpDown,
   ChevronDown,
   ChevronRight,
   Loader2,
-  PackageCheck,
-  Flame,
-  Layers,
   ArrowLeft,
   X,
 } from 'lucide-react';
@@ -24,19 +22,27 @@ import { Product, getCategoryLabel } from '@/data/products';
 
 export default function CollectionsClient() {
   const { products, isLoading } = useAdmin();
+  const searchParams = useSearchParams();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [onlyFavorites, setOnlyFavorites] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc'>('featured');
   const [activeModalProduct, setActiveModalProduct] = useState<Product | null>(null);
 
-  // Kategori tabs
-  const categories = [
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+    }
+  }, [searchParams]);
+
+  // Kategori filter options (termasuk Pilihan Favorit)
+  const categoryOptions = [
     { id: 'all', label: 'Semua Koleksi' },
     { id: 'artistic', label: 'Buket Bunga Artistik' },
     { id: 'celebration', label: 'Perayaan & Momen' },
     { id: 'personal', label: 'Personalisasi & Hadiah' },
+    { id: 'favorites', label: 'Pilihan Favorit' },
   ];
 
   // Ringkasan metrik statistik
@@ -60,8 +66,13 @@ export default function CollectionsClient() {
   const filteredProducts = useMemo(() => {
     let result = products.filter((item) => {
       const label = getCategoryLabel(item);
+      
       const matchesCategory =
-        selectedCategory === 'all' || item.category === selectedCategory;
+        selectedCategory === 'all'
+          ? true
+          : selectedCategory === 'favorites'
+          ? Boolean(item.isPopular)
+          : item.category === selectedCategory;
 
       const matchesSearch =
         !searchQuery ||
@@ -69,9 +80,7 @@ export default function CollectionsClient() {
         item.material.toLowerCase().includes(searchQuery.toLowerCase()) ||
         label.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesFav = !onlyFavorites || Boolean(item.isPopular);
-
-      return matchesCategory && matchesSearch && matchesFav;
+      return matchesCategory && matchesSearch;
     });
 
     if (sortBy === 'price-asc') {
@@ -88,7 +97,7 @@ export default function CollectionsClient() {
     }
 
     return result;
-  }, [products, selectedCategory, searchQuery, onlyFavorites, sortBy]);
+  }, [products, selectedCategory, searchQuery, sortBy]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF8F5]">
@@ -107,84 +116,66 @@ export default function CollectionsClient() {
             </nav>
 
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-              <div>
-                <div className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-[#E60067] mb-1.5">
-                  <Sparkles className="w-3.5 h-3.5" />
+              <div className="max-w-2xl">
+                <div className="inline-flex items-center text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-[#E60067] mb-1.5">
                   Katalog Komprehensif
                 </div>
-                <h1 className="text-2xl sm:text-4xl font-serif font-medium text-stone-900 tracking-tight">
+                <h1 className="text-2xl sm:text-4xl font-serif font-bold text-stone-900 tracking-tight">
                   Seluruh Mahakarya Koleksi Floréa
                 </h1>
-                <p className="text-xs sm:text-sm text-stone-500 mt-1.5 max-w-2xl leading-relaxed">
+                <p className="text-xs sm:text-sm text-stone-500 mt-1.5 leading-relaxed">
                   Jelajahi setiap rangkaian buket bunga sutra velvet & preserved botanicals premium yang dirancang eksklusif untuk setiap perayaan abadi Anda.
                 </p>
               </div>
 
               <Link
                 href="/"
-                className="self-start md:self-auto inline-flex items-center gap-2 text-xs font-semibold text-stone-700 hover:text-stone-900 px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200/80 transition-all duration-150 active:scale-[0.98]"
+                className="self-start md:self-auto inline-flex items-center justify-center text-xs font-semibold text-[#E60067] hover:text-[#B80053] px-5 py-2.5 rounded-full bg-pink-50/70 border border-pink-200/60 hover:bg-pink-100/70 transition-all duration-150 active:scale-[0.98]"
               >
-                <ArrowLeft className="w-3.5 h-3.5" />
                 Kembali ke Beranda
               </Link>
             </div>
 
-            {/* RINGKASAN JUMLAH KOLEKSI (Metric Cards) */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-8 pt-6 border-t border-stone-100">
+            {/* RINGKASAN JUMLAH KOLEKSI (Metric Cards) - Bulatan Angka Berwarna & Label di Bawah */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-8 pt-6 border-t border-pink-100">
               {/* Total Koleksi */}
-              <div className="bg-[#FAF8F5] border border-stone-200/80 rounded-xl p-3.5 sm:p-4">
-                <div className="flex items-center justify-between text-stone-500 mb-1">
-                  <span className="text-[11px] sm:text-xs font-medium uppercase tracking-wider">
-                    Total Koleksi
-                  </span>
-                  <PackageCheck className="w-4 h-4 text-stone-500" />
-                </div>
-                <div className="text-xl sm:text-2xl font-serif font-semibold text-stone-900">
+              <div className="bg-pink-50/30 border border-pink-200/60 rounded-2xl p-4 sm:p-5 flex flex-col items-center text-center hover:border-pink-300 transition-colors">
+                <div className="w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center text-[#E60067] font-serif text-xl sm:text-2xl font-bold shadow-xs">
                   {summaryMetrics.totalCount}
-                  <span className="text-xs font-normal text-stone-500 ml-1.5">Karya</span>
                 </div>
+                <span className="text-[11px] sm:text-xs font-medium uppercase tracking-wider text-stone-600 mt-2.5">
+                  Total Koleksi
+                </span>
               </div>
 
               {/* Pilihan Favorit */}
-              <div className="bg-[#FAF8F5] border border-stone-200/80 rounded-xl p-3.5 sm:p-4">
-                <div className="flex items-center justify-between text-[#E60067] mb-1">
-                  <span className="text-[11px] sm:text-xs font-medium uppercase tracking-wider">
-                    Pilihan Favorit
-                  </span>
-                  <Flame className="w-4 h-4 text-[#E60067]" />
-                </div>
-                <div className="text-xl sm:text-2xl font-serif font-semibold text-[#E60067]">
+              <div className="bg-pink-50/30 border border-pink-200/60 rounded-2xl p-4 sm:p-5 flex flex-col items-center text-center hover:border-pink-300 transition-colors">
+                <div className="w-12 h-12 rounded-full bg-[#E60067] text-white flex items-center justify-center font-serif text-xl sm:text-2xl font-bold shadow-xs">
                   {summaryMetrics.favoriteCount}
-                  <span className="text-xs font-normal text-stone-500 ml-1.5">Buket</span>
                 </div>
+                <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-[#E60067] mt-2.5">
+                  Pilihan Favorit
+                </span>
               </div>
 
               {/* Rangkaian Artistik */}
-              <div className="bg-[#FAF8F5] border border-stone-200/80 rounded-xl p-3.5 sm:p-4">
-                <div className="flex items-center justify-between text-stone-500 mb-1">
-                  <span className="text-[11px] sm:text-xs font-medium uppercase tracking-wider">
-                    Artistik
-                  </span>
-                  <Layers className="w-4 h-4 text-stone-500" />
-                </div>
-                <div className="text-xl sm:text-2xl font-serif font-semibold text-stone-900">
+              <div className="bg-pink-50/30 border border-pink-200/60 rounded-2xl p-4 sm:p-5 flex flex-col items-center text-center hover:border-pink-300 transition-colors">
+                <div className="w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center text-[#E60067] font-serif text-xl sm:text-2xl font-bold shadow-xs">
                   {summaryMetrics.artisticCount}
-                  <span className="text-xs font-normal text-stone-500 ml-1.5">Buket</span>
                 </div>
+                <span className="text-[11px] sm:text-xs font-medium uppercase tracking-wider text-stone-600 mt-2.5">
+                  Artistik
+                </span>
               </div>
 
               {/* Momen & Hadiah */}
-              <div className="bg-[#FAF8F5] border border-stone-200/80 rounded-xl p-3.5 sm:p-4">
-                <div className="flex items-center justify-between text-stone-500 mb-1">
-                  <span className="text-[11px] sm:text-xs font-medium uppercase tracking-wider">
-                    Momen & Hadiah
-                  </span>
-                  <Sparkles className="w-4 h-4 text-stone-500" />
-                </div>
-                <div className="text-xl sm:text-2xl font-serif font-semibold text-stone-900">
+              <div className="bg-pink-50/30 border border-pink-200/60 rounded-2xl p-4 sm:p-5 flex flex-col items-center text-center hover:border-pink-300 transition-colors">
+                <div className="w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center text-[#E60067] font-serif text-xl sm:text-2xl font-bold shadow-xs">
                   {summaryMetrics.celebrationCount + summaryMetrics.personalCount}
-                  <span className="text-xs font-normal text-stone-500 ml-1.5">Buket</span>
                 </div>
+                <span className="text-[11px] sm:text-xs font-medium uppercase tracking-wider text-stone-600 mt-2.5">
+                  Momen & Hadiah
+                </span>
               </div>
             </div>
           </div>
@@ -192,74 +183,67 @@ export default function CollectionsClient() {
 
         {/* Filter Bar & Grid Koleksi */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-          {/* Controls Bar */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8 bg-white border border-stone-200/80 p-3.5 sm:p-4 rounded-2xl shadow-2xs">
-            {/* Tab Kategori */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
-              {categories.map((tab) => (
+          {/* Controls Bar: Compact Icon-Only Search & Dropdowns */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-8 bg-white border border-pink-200/60 p-3 sm:p-3.5 rounded-2xl shadow-xs">
+            {/* Input Pencarian dengan Icon Pink */}
+            <div className="relative flex-1 max-w-md">
+              <Search className="w-4 h-4 text-[#E60067] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Cari buket idaman..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-pink-50/20 border border-pink-100 text-stone-800 text-xs py-2.5 pl-10 pr-8 rounded-xl focus:outline-none focus:border-[#E60067] focus:ring-1 focus:ring-[#E60067]/20 transition-all placeholder:text-stone-400"
+              />
+              {searchQuery && (
                 <button
-                  key={tab.id}
-                  onClick={() => setSelectedCategory(tab.id)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer ${
-                    selectedCategory === tab.id
-                      ? 'bg-[#E60067] text-white shadow-xs'
-                      : 'bg-stone-50 text-stone-600 border border-stone-200/80 hover:border-stone-400 hover:text-stone-900'
-                  }`}
+                  onClick={() => setSearchQuery('')}
+                  aria-label="Hapus pencarian"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-[#E60067] p-0.5 transition-colors cursor-pointer"
                 >
-                  {tab.label}
+                  <X className="w-3.5 h-3.5" />
                 </button>
-              ))}
+              )}
             </div>
 
-            {/* Filter Toggle & Search & Sort */}
-            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5">
-              {/* Tombol Filter Favorit */}
-              <button
-                type="button"
-                onClick={() => setOnlyFavorites(!onlyFavorites)}
-                className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
-                  onlyFavorites
-                    ? 'bg-rose-50 border-rose-300 text-[#E60067]'
-                    : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'
-                }`}
-              >
-                <Flame className={`w-3.5 h-3.5 ${onlyFavorites ? 'fill-[#E60067]' : ''}`} />
-                <span>Hanya Favorit</span>
-              </button>
-
-              {/* Input Pencarian Langsung */}
-              <div className="relative flex-1 sm:w-56">
-                <Search className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <input
-                  type="text"
-                  placeholder="Cari buket..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-stone-50 border border-stone-200 text-stone-800 text-xs py-2 pl-8 pr-7 rounded-xl focus:outline-none focus:border-[#E60067] transition-colors"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+            {/* Filter Kategori & Urutkan (Icon + Select) */}
+            <div className="flex items-center gap-2.5 self-end sm:self-auto w-full sm:w-auto">
+              {/* Dropdown Kategori (Termasuk Opsi Favorit) */}
+              <div className="relative flex-1 sm:flex-initial">
+                <div className="flex items-center gap-2 bg-pink-50/30 border border-pink-200/70 hover:border-[#E60067] rounded-xl px-3 py-2 transition-all">
+                  <Filter className="w-3.5 h-3.5 text-[#E60067] shrink-0" />
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    aria-label="Filter Kategori"
+                    className="appearance-none bg-transparent text-stone-800 text-xs font-semibold pr-6 focus:outline-none cursor-pointer w-full"
                   >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
+                    {categoryOptions.map((opt) => (
+                      <option key={opt.id} value={opt.id} className="text-stone-800 bg-white">
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-[#E60067] absolute right-3 pointer-events-none" />
+                </div>
               </div>
 
-              {/* Sort By Dropdown */}
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  aria-label="Urutkan Koleksi"
-                  className="appearance-none bg-stone-50 border border-stone-200 text-stone-800 text-xs font-semibold py-2 pl-3 pr-8 rounded-xl focus:outline-none focus:border-[#E60067] transition-colors cursor-pointer"
-                >
-                  <option value="featured">Paling Populer</option>
-                  <option value="price-asc">Harga: Terendah</option>
-                  <option value="price-desc">Harga: Tertinggi</option>
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-stone-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              {/* Dropdown Urutkan / Sorting */}
+              <div className="relative flex-1 sm:flex-initial">
+                <div className="flex items-center gap-2 bg-pink-50/30 border border-pink-200/70 hover:border-[#E60067] rounded-xl px-3 py-2 transition-all">
+                  <ArrowUpDown className="w-3.5 h-3.5 text-[#E60067] shrink-0" />
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as any)}
+                    aria-label="Urutkan Koleksi"
+                    className="appearance-none bg-transparent text-stone-800 text-xs font-semibold pr-6 focus:outline-none cursor-pointer w-full"
+                  >
+                    <option value="featured" className="text-stone-800 bg-white">Paling Populer</option>
+                    <option value="price-asc" className="text-stone-800 bg-white">Harga: Terendah</option>
+                    <option value="price-desc" className="text-stone-800 bg-white">Harga: Tertinggi</option>
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-[#E60067] absolute right-3 pointer-events-none" />
+                </div>
               </div>
             </div>
           </div>
@@ -269,12 +253,11 @@ export default function CollectionsClient() {
             <p>
               Menampilkan <span className="font-semibold text-stone-800">{filteredProducts.length}</span> dari {products.length} karya mahakarya
             </p>
-            {(searchQuery || selectedCategory !== 'all' || onlyFavorites) && (
+            {(searchQuery || selectedCategory !== 'all') && (
               <button
                 onClick={() => {
                   setSelectedCategory('all');
                   setSearchQuery('');
-                  setOnlyFavorites(false);
                   setSortBy('featured');
                 }}
                 className="text-[#E60067] hover:underline font-semibold cursor-pointer"
@@ -314,9 +297,8 @@ export default function CollectionsClient() {
                 onClick={() => {
                   setSelectedCategory('all');
                   setSearchQuery('');
-                  setOnlyFavorites(false);
                 }}
-                className="px-5 py-2.5 bg-stone-900 text-white rounded-xl text-xs font-semibold hover:bg-stone-800 transition-colors cursor-pointer"
+                className="px-6 py-2.5 bg-[#E60067] hover:bg-[#CC005A] text-white rounded-full text-xs font-semibold transition-colors cursor-pointer"
               >
                 Tampilkan Semua Koleksi
               </button>

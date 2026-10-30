@@ -59,7 +59,7 @@ export default function ContactPage() {
               <span className="text-[11px] sm:text-xs font-semibold tracking-widest text-[#E60067] uppercase mb-3 block">
                 Concierge & Informasi Atelier
               </span>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-stone-900 tracking-tight leading-tight mb-4">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight leading-tight mb-4">
                 Konsultasikan Mahakarya Anda & <br className="hidden sm:inline" />
                 <span className="italic font-serif text-[#E60067]">Atelier Floréa Florist</span>
               </h1>

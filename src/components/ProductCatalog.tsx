@@ -51,12 +51,12 @@ export function ProductCatalog({
   return (
     <section id="catalog" className="py-12 sm:py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header Katalog */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-5 mb-6 sm:mb-10 pb-5 border-b border-stone-200/80">
+      <div className="reveal-on-scroll flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-5 mb-6 sm:mb-10 pb-5 border-b border-stone-200/80">
         <div>
           <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-[#E60067] block mb-1">
             Pilihan Favorit Pelanggan
           </span>
-          <h2 className="text-2xl sm:text-3xl font-serif font-medium text-stone-900 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
             Koleksi Rangkaian Mahakarya Favorit
           </h2>
           <p className="text-xs text-stone-500 mt-1 max-w-xl">
@@ -111,10 +111,10 @@ export function ProductCatalog({
       ) : favoriteProducts.length > 0 ? (
         <>
           <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory scrollbar-none">
-            {favoriteProducts.map((product) => (
+            {favoriteProducts.map((product, idx) => (
               <div
                 key={product.id}
-                className="w-[calc((100vw-32px-12px)/2)] min-w-[150px] max-w-[210px] sm:w-auto sm:min-w-0 sm:max-w-none shrink-0 snap-start flex"
+                className={`reveal-on-scroll ${idx % 4 === 1 ? 'delay-100' : idx % 4 === 2 ? 'delay-150' : idx % 4 === 3 ? 'delay-200' : ''} w-[calc((100vw-32px-12px)/2)] min-w-[150px] max-w-[210px] sm:w-auto sm:min-w-0 sm:max-w-none shrink-0 snap-start flex`}
               >
                 <ProductCard
                   product={product}
@@ -126,13 +126,12 @@ export function ProductCatalog({
           </div>
 
           {/* Tombol Lihat Semua Koleksi */}
-          <div className="mt-10 sm:mt-14 flex flex-col items-center justify-center text-center">
+          <div className="reveal-on-scroll delay-100 mt-10 sm:mt-14 flex flex-col items-center justify-center text-center">
             <Link
               href="/collections"
-              className="group inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-stone-900 hover:bg-[#E60067] text-white text-xs sm:text-sm font-semibold rounded-xl shadow-xs transition-all duration-200 active:scale-[0.98]"
+              className="inline-flex items-center justify-center px-7 py-3 rounded-full bg-[#E60067] hover:bg-[#CC005A] text-white text-xs sm:text-sm font-semibold tracking-wide transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] shadow-sm hover:shadow-md"
             >
-              <span>Lihat Semua Koleksi</span>
-              <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+              Lihat Semua Koleksi
             </Link>
             <p className="mt-2.5 text-[11px] sm:text-xs text-stone-500">
               Jelajahi seluruh variasi mahakarya floral Floréa yang tersedia
@@ -147,13 +146,13 @@ export function ProductCatalog({
           <div className="flex flex-wrap items-center justify-center gap-2">
             <button
               onClick={() => onCategoryChange('all')}
-              className="px-4 py-2 bg-stone-900 text-white rounded-lg text-xs font-semibold hover:bg-stone-800 transition-colors"
+              className="px-5 py-2.5 bg-stone-900 text-white rounded-full text-xs font-semibold hover:bg-stone-800 transition-colors"
             >
               Reset Kategori
             </button>
             <Link
               href="/collections"
-              className="px-4 py-2 bg-[#E60067] text-white rounded-lg text-xs font-semibold hover:bg-[#c70058] transition-colors"
+              className="px-5 py-2.5 bg-[#E60067] text-white rounded-full text-xs font-semibold hover:bg-[#CC005A] transition-colors"
             >
               Buka Semua Koleksi
             </Link>

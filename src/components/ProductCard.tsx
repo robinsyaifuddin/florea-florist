@@ -2,8 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Eye } from 'lucide-react';
-import { Product, getCategoryLabel } from '@/data/products';
+import { Product, getCategoryShortLabel } from '@/data/products';
 
 interface ProductCardProps {
   product: Product;
@@ -22,12 +21,49 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="group relative flex flex-col w-full bg-white rounded-xl border border-stone-200/90 p-3 sm:p-4 transition-transform duration-150 hover:-translate-y-1 hover:border-stone-400 hover:shadow-sm will-change-transform">
-      {/* Badge Favorit Pink */}
+      {/* Badge Favorit Star Modern 3D */}
       {product.isPopular && (
-        <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-10 pointer-events-none">
-          <span className="bg-[#E60067] text-white text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded shadow-2xs">
-            Favorit
-          </span>
+        <div
+          aria-label="Produk Favorit"
+          title="Produk Favorit"
+          className="absolute top-4 left-4 sm:top-5 sm:left-5 z-20 pointer-events-none drop-shadow-md transition-transform duration-200 group-hover:scale-110"
+        >
+          <svg
+            className="w-6 h-6 sm:w-7 sm:h-7 filter drop-shadow-[0_2px_4px_rgba(230,0,103,0.35)]"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <linearGradient id={`star3d-grad-${product.id}`} x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#FF6BB5" />
+                <stop offset="45%" stopColor="#E60067" />
+                <stop offset="100%" stopColor="#9E0042" />
+              </linearGradient>
+              <linearGradient id={`star3d-highlight-${product.id}`} x1="12" y1="2" x2="12" y2="12" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.85" />
+                <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            {/* Base Star */}
+            <path
+              d="M12 2.5L14.938 8.452L21.508 9.407L16.754 14.043L17.876 20.585L12 17.495L6.124 20.585L7.246 14.043L2.492 9.407L9.062 8.452L12 2.5Z"
+              fill={`url(#star3d-grad-${product.id})`}
+              stroke="#FFFFFF"
+              strokeWidth="0.75"
+              strokeLinejoin="round"
+            />
+            {/* Top 3D Facet Highlight */}
+            <path
+              d="M12 2.5L14.938 8.452L12 12L9.062 8.452L12 2.5Z"
+              fill={`url(#star3d-highlight-${product.id})`}
+            />
+            <path
+              d="M12 12L21.508 9.407L16.754 14.043L12 12Z"
+              fill="#FFFFFF"
+              fillOpacity="0.2"
+            />
+          </svg>
         </div>
       )}
 
@@ -35,7 +71,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <Link
         href={`/product/${product.id}`}
         prefetch={true}
-        className="relative w-full aspect-[4/5] bg-stone-100 rounded-lg overflow-hidden mb-3 sm:mb-4 block"
+        className="relative w-full aspect-[4/5] bg-stone-100 rounded-lg overflow-hidden mb-3 sm:mb-4 block outline-none select-none [-webkit-tap-highlight-color:transparent]"
       >
         <Image
           src={product.image}
@@ -45,24 +81,16 @@ export function ProductCard({ product }: ProductCardProps) {
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
           className="object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
         />
-
-        {/* Hover Desktop Quick Detail */}
-        <div className="absolute inset-0 bg-stone-950/20 hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none">
-          <span className="px-4 py-2 bg-white text-stone-900 text-xs font-semibold rounded-lg shadow-sm flex items-center gap-1.5">
-            <Eye className="w-3.5 h-3.5" />
-            Lihat Detail
-          </span>
-        </div>
       </Link>
 
       {/* Info Rangkaian Buket */}
       <div className="flex flex-col flex-grow">
         <div className="text-[10px] sm:text-[11px] text-[#E60067] font-semibold uppercase tracking-wider mb-1 truncate">
-          {getCategoryLabel(product)}
+          {getCategoryShortLabel(product)}
         </div>
 
         <Link href={`/product/${product.id}`} prefetch={true} className="block">
-          <h3 className="text-sm sm:text-base font-serif font-medium text-stone-900 group-hover:text-[#E60067] transition-colors line-clamp-1 mb-1">
+          <h3 className="text-sm sm:text-base font-serif font-bold text-stone-900 group-hover:text-[#E60067] transition-colors line-clamp-1 mb-1">
             {product.name}
           </h3>
         </Link>
@@ -79,15 +107,14 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
 
-        {/* Tombol Aksi Menuju Halaman Detail (Ringan, Instant Transition) */}
+        {/* Tombol Aksi Menuju Halaman Detail */}
         <div className="mt-auto pt-1 flex items-center gap-2">
           <Link
             href={`/product/${product.id}`}
             prefetch={true}
-            className="flex-1 py-2 sm:py-2.5 px-3 rounded-lg sm:rounded-xl bg-[#E60067] hover:bg-[#CC005A] text-white text-xs font-semibold tracking-wide flex items-center justify-center gap-1.5 transition-colors duration-100 active:scale-[0.98] shadow-2xs"
+            className="flex-1 py-2 sm:py-2.5 px-4 rounded-full bg-[#E60067] hover:bg-[#CC005A] text-white text-xs font-semibold tracking-wide text-center transition-colors duration-100 active:scale-[0.98] shadow-2xs"
           >
-            <Eye className="w-3.5 h-3.5" />
-            <span>Lihat Koleksi</span>
+            Lihat Koleksi
           </Link>
         </div>
       </div>

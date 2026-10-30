@@ -166,7 +166,7 @@ Mohon konfirmasi ketersediaan slot rangkaian dan jadwal pengirimannya. Terima ka
           </div>
 
           {/* Title */}
-          <h1 className="text-lg sm:text-xl lg:text-2xl font-serif font-medium text-stone-900 mb-1 tracking-tight">
+          <h1 className="text-lg sm:text-xl lg:text-2xl font-serif font-bold text-stone-900 mb-1 tracking-tight">
             {product.name}
           </h1>
 
@@ -287,9 +287,8 @@ Mohon konfirmasi ketersediaan slot rangkaian dan jadwal pengirimannya. Terima ka
             {/* Tombol Pesan Sekarang */}
             <button
               onClick={handleOrderWhatsApp}
-              className="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-[#E60067] hover:bg-[#CC005A] text-white text-xs sm:text-sm font-semibold tracking-wide flex items-center justify-center gap-1.5 transition duration-150 active:scale-[0.98] shadow-xs cursor-pointer min-w-0"
+              className="flex-1 py-2.5 sm:py-3 px-4 sm:px-6 rounded-full bg-[#E60067] hover:bg-[#CC005A] text-white text-xs sm:text-sm font-semibold tracking-wide flex items-center justify-center transition duration-150 active:scale-[0.98] shadow-xs cursor-pointer min-w-0"
             >
-              <MessageCircle className="w-4 h-4 shrink-0" />
               <span className="truncate">Reservasi Sekarang</span>
             </button>
 
@@ -362,7 +361,7 @@ Mohon konfirmasi ketersediaan slot rangkaian dan jadwal pengirimannya. Terima ka
             <span className="text-[11px] font-semibold uppercase tracking-widest text-[#E60067] mb-1">
               Koleksi Pelengkap
             </span>
-            <h2 className="text-xl sm:text-2xl font-serif font-medium text-stone-900">
+            <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
               Pilihan Mahakarya Sejenis Dari Florist
             </h2>
           </div>

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Cormorant_Garamond, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { AdminProvider } from '@/context/AdminContext';
+import { ScrollRevealInit } from '@/components/ScrollRevealInit';
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -150,6 +151,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans bg-[#FAF8F5] text-stone-900 antialiased selection:bg-rose-100 selection:text-rose-900 min-h-screen flex flex-col">
+        <ScrollRevealInit />
         <AdminProvider>{children}</AdminProvider>
       </body>
     </html>

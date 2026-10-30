@@ -200,9 +200,8 @@ Mohon konfirmasi ketersediaan slot rangkaian untuk jadwal di atas. Terima kasih!
 
             <button
               type="submit"
-              className="w-full py-3.5 rounded-lg bg-[#E60067] hover:bg-[#CC005A] text-white font-semibold text-xs tracking-wider uppercase flex items-center justify-center gap-2 transition-all duration-150 active:scale-[0.98] shadow-sm mt-3"
+              className="w-full py-3.5 rounded-full bg-[#E60067] hover:bg-[#CC005A] text-white font-semibold text-xs tracking-wider uppercase flex items-center justify-center transition-all duration-150 active:scale-[0.98] shadow-sm mt-3"
             >
-              <Send className="w-3.5 h-3.5" />
               Lanjutkan Pemesanan ke WhatsApp
             </button>
           </form>
