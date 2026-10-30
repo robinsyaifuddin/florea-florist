@@ -33,7 +33,7 @@ export function AdminProvider({
   children: ReactNode;
   initialProducts?: Product[];
 }) {
-  // Inisialisasi awal produk: Prioritas 1 Server SSR, Prioritas 2 LocalStorage SWR
+  // Inisialisasi awal produk: Prioritas 1 Server SSR, Prioritas 2 LocalStorage SWR, Prioritas 3 Bundled PRODUCTS
   const [products, setProducts] = useState<Product[]>(() => {
     if (initialProducts && initialProducts.length > 0) {
       return initialProducts;
@@ -49,26 +49,10 @@ export function AdminProvider({
         // Abaikan kegagalan baca cache
       }
     }
-    return [];
+    return PRODUCTS;
   });
 
-  const [isLoading, setIsLoading] = useState<boolean>(() => {
-    // Jika server SSR sudah memasok produk, tidak perlu loading
-    if (initialProducts && initialProducts.length > 0) {
-      return false;
-    }
-    // Jika di browser ada cache localStorage yang valid, tidak perlu loading
-    if (typeof window !== 'undefined') {
-      try {
-        const cached = localStorage.getItem('florea_cached_products');
-        if (cached && JSON.parse(cached).length > 0) {
-          return false;
-        }
-      } catch {}
-    }
-    // Jika belum ada data sama sekali, tampilkan loading skeleton
-    return true;
-  });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);

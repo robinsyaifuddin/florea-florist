@@ -63,12 +63,15 @@ async function fetchProductsRaw(): Promise<Product[]> {
 
     if (error) {
       console.error('Error fetching products from Supabase:', error.message);
-      return [];
+      return PRODUCTS;
     }
-    return (data || []).map(mapSupabaseToProduct);
+    if (!data || data.length === 0) {
+      return PRODUCTS;
+    }
+    return data.map(mapSupabaseToProduct);
   } catch (err) {
     console.error('Fetch products raw error:', err);
-    return [];
+    return PRODUCTS;
   }
 }
 
@@ -83,12 +86,14 @@ async function fetchProductByIdRaw(id: string): Promise<Product | null> {
       .single();
 
     if (error || !data) {
-      return null;
+      const fallback = PRODUCTS.find((p) => p.id === id);
+      return fallback || null;
     }
     return mapSupabaseToProduct(data);
   } catch (err) {
     console.error('Fetch product by ID raw error:', err);
-    return null;
+    const fallback = PRODUCTS.find((p) => p.id === id);
+    return fallback || null;
   }
 }
 
