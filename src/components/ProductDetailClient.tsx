@@ -174,9 +174,9 @@ Mohon konfirmasi ketersediaan slot rangkaian dan jadwal pengirimannya. Terima ka
                   alt={product.name}
                   fill
                   priority
-                  unoptimized
+                  quality={85}
                   draggable={false}
-                  sizes="(max-width: 768px) 100vw, 400px"
+                  sizes="(max-width: 768px) 100vw, 420px"
                   className="object-cover select-none pointer-events-none"
                   style={{
                     WebkitTouchCallout: 'none',

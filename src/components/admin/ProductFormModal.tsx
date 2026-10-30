@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Image from 'next/image';
-import { X, Upload, Image as ImageIcon, Trash2 } from 'lucide-react';
+import { X, Upload, Image as ImageIcon } from 'lucide-react';
 import { Product, CATEGORY_LABELS } from '@/data/products';
 
 interface ProductFormModalProps {
@@ -25,9 +25,11 @@ export default function ProductFormModal({
   const [category, setCategory] = useState<Product['category']>(
     initialProduct?.category || 'artistic'
   );
-  const [price, setPrice] = useState<number>(initialProduct?.price || 220000);
-  const [originalPrice, setOriginalPrice] = useState<number | undefined>(
-    initialProduct?.originalPrice
+  const [price, setPrice] = useState<number | ''>(
+    initialProduct ? initialProduct.price : ''
+  );
+  const [originalPrice, setOriginalPrice] = useState<number | ''>(
+    initialProduct?.originalPrice ?? ''
   );
   const [isPopular, setIsPopular] = useState<boolean>(
     initialProduct?.isPopular || false
@@ -42,28 +44,47 @@ export default function ProductFormModal({
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Helper konversi file/blob gambar ke format WebP berkualitas tinggi tanpa merusak detail
+  // Helper konversi file/blob gambar ke format WebP super ringan & tajam
   const convertToWebP = (blob: Blob): Promise<string> => {
     return new Promise((resolve, reject) => {
       const img = new (window as any).Image();
       const objectUrl = URL.createObjectURL(blob);
       img.onload = () => {
         URL.revokeObjectURL(objectUrl);
+        let originW = img.naturalWidth || img.width;
+        let originH = img.naturalHeight || img.height;
+
+        // Optimasi dimensi: max 1280px (sangat tajam untuk katalog e-commerce, namun memangkas 80-90% bobot memori)
+        const maxDimension = 1280;
+        let targetW = originW;
+        let targetH = originH;
+
+        if (originW > maxDimension || originH > maxDimension) {
+          if (originW >= originH) {
+            targetW = maxDimension;
+            targetH = Math.round((originH * maxDimension) / originW);
+          } else {
+            targetH = maxDimension;
+            targetW = Math.round((originW * maxDimension) / originH);
+          }
+        }
+
         const canvas = document.createElement('canvas');
-        canvas.width = img.naturalWidth || img.width;
-        canvas.height = img.naturalHeight || img.height;
+        canvas.width = targetW;
+        canvas.height = targetH;
         const ctx = canvas.getContext('2d');
         if (!ctx) {
           reject(new Error('Canvas context tidak tersedia'));
           return;
         }
-        // Gambarkan piksel dengan rendering berkualitas tinggi
+
+        // Rendering piksel halus
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(img, 0, 0);
+        ctx.drawImage(img, 0, 0, targetW, targetH);
 
-        // Export ke WebP kualitas tinggi (0.92: sangat tajam, ringan & lossless-like)
-        const webpDataUrl = canvas.toDataURL('image/webp', 0.92);
+        // Ekspor ke format WebP terkompresi efisien (kualitas 0.82: visual jernih & bobot file sangat ringan ~40-90KB)
+        const webpDataUrl = canvas.toDataURL('image/webp', 0.82);
         resolve(webpDataUrl);
       };
       img.onerror = () => {
@@ -139,33 +160,31 @@ export default function ProductFormModal({
   };
 
   // Sizes / Kemewahan Rangkaian
-  const [sizes, setSizes] = useState<Array<{ id: string; name: string; price: number }>>(
+  const [sizes, setSizes] = useState<Array<{ id: string; name: string; price: number | '' }>>(
     initialProduct?.sizes && initialProduct.sizes.length > 0
       ? initialProduct.sizes
       : [
-          { id: 'standard', name: 'Standard', price: initialProduct?.price || 220000 },
-          { id: 'deluxe', name: 'Deluxe (+Rp 50.000)', price: (initialProduct?.price || 220000) + 50000 },
-          { id: 'premium', name: 'Premium (+Rp 100.000)', price: (initialProduct?.price || 220000) + 100000 },
+          { id: 'standard', name: '', price: '' },
+          { id: 'deluxe', name: '', price: '' },
+          { id: 'premium', name: '', price: '' },
         ]
   );
 
   // Specifications
   const [material, setMaterial] = useState(
-    initialProduct?.material || 'Textured Fabric & Real Touch Stem'
+    initialProduct?.material || ''
   );
   const [durability, setDurability] = useState(
-    initialProduct?.durability || 'Presisi Alami • Tahan Sepanjang Masa'
+    initialProduct?.durability || ''
   );
   const [arrangementStyle, setArrangementStyle] = useState(
-    initialProduct?.details?.arrangementStyle || 'Korean Haute Couture Floral Architecture'
+    initialProduct?.details?.arrangementStyle || ''
   );
   const [packaging, setPackaging] = useState(
-    initialProduct?.details?.packaging ||
-      'Premium Matte Wrapping Paper, Pita Satin Lembut & Kartu Kaligrafi'
+    initialProduct?.details?.packaging || ''
   );
   const [occasion, setOccasion] = useState(
-    initialProduct?.details?.occasion ||
-      'Wisuda Kehormatan, Anniversary, Pernikahan, Ulang Tahun Berkesan & Apresiasi Personal'
+    initialProduct?.details?.occasion || ''
   );
 
   const handleSizeChange = (index: number, field: 'name' | 'price', val: string | number) => {
@@ -182,15 +201,18 @@ export default function ProductFormModal({
       name,
       category,
       categoryLabel: CATEGORY_LABELS[category] || 'Pesona Puspa Abadi (Koleksi Buket Bunga Artistik)',
-      price: Number(price),
-      originalPrice: originalPrice ? Number(originalPrice) : undefined,
+      price: price === '' ? 0 : Number(price),
+      originalPrice: originalPrice !== '' ? Number(originalPrice) : undefined,
       isPopular,
       material,
       durability,
       image: mainImage || '',
       gallery: mainImage ? [mainImage] : [],
       description,
-      sizes,
+      sizes: sizes.map((s) => ({
+        ...s,
+        price: s.price === '' ? 0 : Number(s.price),
+      })),
       details: {
         flowerType: material,
         bouquetSize: 'Tinggi ~45cm x Lebar ~35cm',
@@ -277,10 +299,12 @@ export default function ProductFormModal({
                   min={0}
                   step={5000}
                   value={price}
+                  placeholder="Misal: 220000"
                   onChange={(e) => {
-                    const val = Number(e.target.value);
+                    const raw = e.target.value;
+                    const val = raw === '' ? '' : Number(raw);
                     setPrice(val);
-                    // auto sync standard size price
+                    // auto sync standard size price if standard exists
                     setSizes((prev) =>
                       prev.map((s, idx) => (idx === 0 ? { ...s, price: val } : s))
                     );
@@ -297,10 +321,11 @@ export default function ProductFormModal({
                   type="number"
                   min={0}
                   step={5000}
-                  value={originalPrice || ''}
-                  onChange={(e) =>
-                    setOriginalPrice(e.target.value ? Number(e.target.value) : undefined)
-                  }
+                  value={originalPrice}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    setOriginalPrice(raw === '' ? '' : Number(raw));
+                  }}
                   placeholder="Misal: 270000"
                   className="w-full text-xs sm:text-sm p-2.5 rounded-lg border border-stone-200 focus:outline-none focus:border-[#E60067] focus:ring-1 focus:ring-[#E60067]"
                 />
@@ -384,28 +409,12 @@ export default function ProductFormModal({
                     className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-stone-900 hover:bg-stone-800 disabled:opacity-50 text-white text-xs font-medium shadow-xs transition active:scale-[0.98] cursor-pointer"
                   >
                     <Upload className="w-3.5 h-3.5" />
-                    <span>{isProcessing ? 'Memproses...' : mainImage ? 'Ganti Gambar' : 'Upload Gambar'}</span>
+                    <span>{isProcessing ? 'Mengompres WebP...' : mainImage ? 'Ganti Gambar' : 'Upload Gambar'}</span>
                   </button>
-
-                  {mainImage && (
-                    <button
-                      type="button"
-                      disabled={isProcessing}
-                      onClick={() => {
-                        setMainImage('');
-                        if (fileInputRef.current) fileInputRef.current.value = '';
-                      }}
-                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-stone-200 text-stone-600 hover:text-red-600 hover:bg-red-50 text-xs font-medium transition cursor-pointer"
-                      title="Hapus gambar saat ini"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Hapus</span>
-                    </button>
-                  )}
                 </div>
 
                 <p className="text-[10px] text-stone-400">
-                  Mendukung semua format gambar (JPG, PNG, WEBP, HEIC iPhone) resolusi HD.
+                  Otomatis dikonversi ke format WebP super ringan & tajam untuk loading katalog cepat.
                 </p>
 
                 {uploadError && (
@@ -439,6 +448,7 @@ export default function ProductFormModal({
                     <input
                       type="text"
                       value={s.name}
+                      placeholder={idx === 0 ? 'Standard' : idx === 1 ? 'Deluxe' : 'Premium'}
                       onChange={(e) => handleSizeChange(idx, 'name', e.target.value)}
                       className="w-full text-xs p-1.5 rounded border border-stone-200 bg-white"
                     />
@@ -448,7 +458,11 @@ export default function ProductFormModal({
                     <input
                       type="number"
                       value={s.price}
-                      onChange={(e) => handleSizeChange(idx, 'price', Number(e.target.value))}
+                      placeholder="0"
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        handleSizeChange(idx, 'price', raw === '' ? '' : Number(raw));
+                      }}
                       className="w-full text-xs p-1.5 rounded border border-stone-200 bg-white"
                     />
                   </div>

@@ -89,8 +89,9 @@ export function ProductCard({ product }: ProductCardProps) {
             fill
             loading="lazy"
             decoding="async"
+            quality={75}
             onLoad={() => setImageLoaded(true)}
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
+            sizes="(max-width: 640px) 45vw, (max-width: 1024px) 33vw, 25vw"
             className={`object-cover group-hover:scale-105 transition-all duration-300 ease-out z-1 ${
               imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
             }`}

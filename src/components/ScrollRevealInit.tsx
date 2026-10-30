@@ -35,14 +35,19 @@ export function ScrollRevealInit() {
 
     observeElements();
 
-    // Re-observe periodically or on DOM mutations for dynamically rendered items
+    // Re-observe on DOM mutations with RAF throttling for high FPS performance
+    let rafId: number | null = null;
     const mutationObserver = new MutationObserver(() => {
-      observeElements();
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        observeElements();
+      });
     });
 
     mutationObserver.observe(document.body, { childList: true, subtree: true });
 
     return () => {
+      if (rafId) cancelAnimationFrame(rafId);
       observer.disconnect();
       mutationObserver.disconnect();
     };
