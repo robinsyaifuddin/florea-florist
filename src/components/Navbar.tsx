@@ -35,13 +35,13 @@ export function Navbar({ onSearchChange, activeCategory = 'all', onSelectCategor
           {/* Logo Brand Asli */}
           <Link
             href="/"
-            aria-label="Floréa Florist Home"
+            aria-label="Florea Florist Flowers and Gift Home"
             className="flex items-center group focus:outline-none transition-transform duration-200 hover:scale-105 active:scale-95 shrink-0"
           >
             <div className="relative h-9 w-24 sm:h-14 sm:w-36">
               <Image
                 src="/logo-transparent.png"
-                alt="Floréa Florist Logo"
+                alt="Florea Florist Flowers and Gift Logo"
                 fill
                 priority
                 className="object-contain object-left"

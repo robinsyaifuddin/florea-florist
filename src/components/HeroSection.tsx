@@ -49,7 +49,7 @@ export function HeroSection() {
             </div>
 
             <p className="text-stone-600 text-sm sm:text-base lg:text-[17px] leading-relaxed max-w-lg mb-6 sm:mb-8 font-normal">
-              Kami tidak sekadar merangkai bunga. Florea menghadirkan karya seni floral mewah dan abadi dengan merawat setiap momen berharga bagi orang paling istimewa.
+              Florea Florist menghadirkan kurasi buket mewah terbaik, buket original pria & wanita, serta gift terbaik pasangan untuk momen wisuda dan ulang tahun berkesan selamanya.
             </p>
 
             {/* Tombol Aksi Kiri */}

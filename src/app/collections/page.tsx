@@ -3,9 +3,18 @@ import { Suspense } from 'react';
 import CollectionsClient from './CollectionsClient';
 
 export const metadata: Metadata = {
-  title: 'Daftar Semua Koleksi Mahakarya | Floréa Florist',
+  title: 'Koleksi Buket Mewah Terbaik, Bunga Sutra & Hadiah | Florea Florist',
   description:
-    'Eksplorasi seluruh portofolio buket bunga sutra premium dan preserved flower abadi Floréa Florist. Tersedia berbagai kategori dan varian terlengkap.',
+    'Eksplorasi buket original, buket termewah, buket pria, buket wanita, serta gift terbaik pasangan untuk hadiah ulang tahun dan wisuda dari Florea Flowers and Gift.',
+  alternates: {
+    canonical: '/collections',
+  },
+  openGraph: {
+    title: 'Koleksi Buket Mewah Terbaik & Original | Florea Florist',
+    description:
+      'Pilihan buket bunga terbaik, buket wisuda, dan hadiah ulang tahun premium. Tersedia pengiriman aman seluruh Indonesia.',
+    url: 'https://florea.web.id/collections',
+  },
 };
 
 export default function CollectionsPage() {

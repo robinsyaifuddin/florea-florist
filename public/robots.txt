@@ -1,4 +1,23 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /api/admin/
+
+# AI Crawlers & LLM Agents (Gemini, ChatGPT, Perplexity, Claude, Applebot)
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
 
 Sitemap: https://florea.web.id/sitemap.xml
+

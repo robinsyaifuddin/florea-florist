@@ -14,8 +14,11 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Layanan Eksklusif & Informasi Pemesanan | Floréa Florist',
-  description: 'Layanan konsultasi concierge Floréa Florist, lokasi studio workshop, jadwal pemesanan, kontak resmi WhatsApp, dan panduan pemesanan buket abadi.',
+  title: 'Kontak & Informasi Pemesanan | Florea Florist Flowers & Gift',
+  description: 'Hubungi Florea Florist untuk konsultasi buket mewah terbaik, buket custom wisuda, buket pria/wanita, dan gift terbaik pasangan. Studio di Depok, kirim seluruh Indonesia.',
+  alternates: {
+    canonical: '/contact',
+  },
 };
 
 const faqs: FAQItem[] = [
