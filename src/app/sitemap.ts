@@ -5,9 +5,8 @@ import { getProducts } from '@/lib/supabase/products';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://florea.web.id';
 
-  // Dapatkan produk statis + produk database Supabase secara aman
-  const dbProducts = await getProducts().catch(() => []);
-  const allProducts = dbProducts.length > 0 ? dbProducts : PRODUCTS;
+  // Dapatkan produk murni dari database Supabase
+  const allProducts = await getProducts().catch(() => []);
 
   const productUrls = allProducts.map((product) => ({
     url: `${baseUrl}/product/${product.id}`,

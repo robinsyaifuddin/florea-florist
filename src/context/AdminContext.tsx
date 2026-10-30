@@ -27,9 +27,9 @@ interface AdminContextType {
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export function AdminProvider({ children }: { children: ReactNode }) {
-  // Gunakan data awal dari PRODUCTS lokal agar saat pertama render atau klik halaman langsung instan tanpa blank/lag
-  const [products, setProducts] = useState<Product[]>(PRODUCTS);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  // Hanya gunakan data riil dari Supabase (bila kosong, murni kosong tanpa fallback ke fiktif/dummy)
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
@@ -51,13 +51,12 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Ambil data produk terbaru di latar belakang (revalidasi tanpa memblokir UI)
+  // Ambil data produk terbaru dari database Supabase
   const refreshProducts = useCallback(async () => {
     try {
       const data = await fetchProductsFromSupabase();
-      if (data && data.length > 0) {
-        setProducts(data);
-      }
+      // Set sesuai hasil database, jika kosong maka menjadi array kosong []
+      setProducts(data || []);
     } catch (err) {
       console.error('Failed to load products:', err);
     } finally {
