@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Image from 'next/image';
-import { X, Upload, Image as ImageIcon, Sparkles } from 'lucide-react';
+import { X, Upload, Image as ImageIcon } from 'lucide-react';
 import { Product, CATEGORY_LABELS } from '@/data/products';
 
 interface ProductFormModalProps {
@@ -43,29 +43,66 @@ export default function ProductFormModal({
   const [mainImage, setMainImage] = useState(defaultImage);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      setUploadError('Harap pilih file gambar (JPG, PNG, WEBP).');
+    const fileName = file.name.toLowerCase();
+    const isHeic =
+      fileName.endsWith('.heic') ||
+      fileName.endsWith('.heif') ||
+      file.type === 'image/heic' ||
+      file.type === 'image/heif';
+
+    const isGeneralImage =
+      file.type.startsWith('image/') ||
+      /\.(jpe?g|png|webp|gif|svg|bmp|avif|tiff?)$/i.test(fileName);
+
+    if (!isHeic && !isGeneralImage) {
+      setUploadError('Harap pilih file gambar (JPG, PNG, WEBP, HEIC/iPhone, dsb).');
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setUploadError('Ukuran file maksimal 5MB.');
+    if (file.size > 25 * 1024 * 1024) {
+      setUploadError('Ukuran file maksimal 25MB.');
       return;
     }
 
     setUploadError(null);
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        setMainImage(reader.result);
+    setIsProcessing(true);
+
+    try {
+      let imageBlob: Blob = file;
+
+      if (isHeic) {
+        // Konversi format iPhone HEIC/HEIF ke JPEG HD berkualitas tinggi (0.95)
+        const heic2any = (await import('heic2any')).default;
+        const converted = await heic2any({
+          blob: file,
+          toType: 'image/jpeg',
+          quality: 0.95,
+        });
+        imageBlob = Array.isArray(converted) ? converted[0] : converted;
       }
-    };
-    reader.readAsDataURL(file);
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          setMainImage(reader.result);
+        }
+        setIsProcessing(false);
+      };
+      reader.onerror = () => {
+        setUploadError('Gagal memproses gambar. Silakan coba lagi.');
+        setIsProcessing(false);
+      };
+      reader.readAsDataURL(imageBlob);
+    } catch (err: any) {
+      setUploadError('Gagal mengonversi foto HEIC. Pastikan file tidak korup.');
+      setIsProcessing(false);
+    }
   };
 
   // Sizes / Kemewahan Rangkaian
@@ -160,8 +197,8 @@ export default function ProductFormModal({
         <form onSubmit={handleSubmit} className="overflow-y-auto p-6 space-y-6">
           {/* Section 1: Identitas Produk */}
           <div className="space-y-4">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#E60067] flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" /> 1. Informasi Utama & Harga
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#E60067]">
+              Informasi Utama & Harga
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -268,14 +305,15 @@ export default function ProductFormModal({
 
           {/* Section 2: Foto Utama Mahakarya */}
           <div className="space-y-3">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#E60067] flex items-center gap-1.5">
-              <ImageIcon className="w-3.5 h-3.5" /> 2. Foto Mahakarya (Single Showcase)
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#E60067]">
+              Foto Mahakarya (Single Showcase)
             </h4>
             <p className="text-[11px] text-stone-400">
-              Unggah file foto buket langsung dari perangkat Anda (JPG, PNG, WEBP) tanpa perlu URL.
+              Unggah file foto buket langsung dari perangkat Anda (semua format termasuk HEIC/iPhone).
             </p>
 
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-xl border border-stone-200 bg-stone-50/50">
+            <div className="flex items-center gap-4 p-4 rounded-xl border border-stone-200 bg-stone-50/50">
+              {/* Kolom Kiri: Pratinjau Foto */}
               <div className="w-20 h-20 relative rounded-xl border border-stone-200 overflow-hidden shrink-0 bg-stone-100 flex items-center justify-center shadow-2xs">
                 {mainImage ? (
                   <Image
@@ -288,35 +326,37 @@ export default function ProductFormModal({
                 ) : (
                   <ImageIcon className="w-6 h-6 text-stone-400" />
                 )}
+                {isProcessing && (
+                  <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-xs flex items-center justify-center">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  </div>
+                )}
               </div>
 
-              <div className="flex-1 w-full space-y-2">
+              {/* Kolom Kanan: Tombol Upload & Info */}
+              <div className="flex-1 min-w-0 space-y-1.5">
                 <input
                   type="file"
                   ref={fileInputRef}
-                  accept="image/png, image/jpeg, image/webp"
+                  accept="image/*,.heic,.heif"
                   onChange={handleFileUpload}
                   className="hidden"
                 />
 
-                <div className="flex items-center gap-2">
+                <div>
                   <button
                     type="button"
+                    disabled={isProcessing}
                     onClick={() => fileInputRef.current?.click()}
-                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-medium shadow-xs transition active:scale-[0.98] cursor-pointer"
+                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-stone-900 hover:bg-stone-800 disabled:opacity-50 text-white text-xs font-medium shadow-xs transition active:scale-[0.98] cursor-pointer"
                   >
                     <Upload className="w-3.5 h-3.5" />
-                    <span>Upload Foto Mahakarya</span>
+                    <span>{isProcessing ? 'Memproses...' : 'Upload Gambar'}</span>
                   </button>
-                  {mainImage && (
-                    <span className="text-[11px] text-stone-500">
-                      Foto siap digunakan
-                    </span>
-                  )}
                 </div>
 
                 <p className="text-[10px] text-stone-400">
-                  Mendukung file PNG, JPG, atau WEBP hingga 5MB.
+                  Mendukung semua format gambar (JPG, PNG, WEBP, HEIC iPhone) resolusi HD.
                 </p>
 
                 {uploadError && (
@@ -333,7 +373,7 @@ export default function ProductFormModal({
           {/* Section 3: Dimensi & Kemewahan Rangkaian (Ukuran & Varian Harga) */}
           <div className="space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-wider text-[#E60067]">
-              3. Opsi Dimensi & Kemewahan Rangkaian
+              Opsi Dimensi & Kemewahan Rangkaian
             </h4>
             <p className="text-[11px] text-stone-400">
               Format pilihan ukuran yang tampil sebagai kartu opsi di samping foto (Standard, Deluxe, Premium).
@@ -373,7 +413,7 @@ export default function ProductFormModal({
           {/* Section 4: Detail Mahakarya & Spesifikasi (Sesuai Tabel di Gambar) */}
           <div className="space-y-3">
             <h4 className="text-xs font-semibold uppercase tracking-wider text-[#E60067]">
-              4. Detail Mahakarya & Tabel Spesifikasi
+              Detail Mahakarya & Tabel Spesifikasi
             </h4>
             <div className="space-y-3">
               <div>

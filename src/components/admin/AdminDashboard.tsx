@@ -11,23 +11,34 @@ import {
   ExternalLink,
   LogOut,
   RotateCcw,
-  Sparkles,
-  Layers,
-  SlidersHorizontal,
+  ChevronDown,
   CheckCircle2,
   AlertCircle,
   Info,
-  TrendingUp,
+  Flower2,
+  PartyPopper,
+  Gift,
+  LayoutGrid,
 } from 'lucide-react';
 import { useAdmin } from '@/context/AdminContext';
-import { Product, getCategoryLabel } from '@/data/products';
+import { Product, getCategoryLabel, getCategoryShortLabel } from '@/data/products';
 import ProductFormModal from './ProductFormModal';
+
+const CATEGORY_OPTIONS = [
+  { id: 'all', label: 'Semua Koleksi', icon: LayoutGrid },
+  { id: 'artistic', label: 'Buket Bunga Artistik', icon: Flower2 },
+  { id: 'celebration', label: 'Perayaan & Momen', icon: PartyPopper },
+  { id: 'personal', label: 'Personalisasi & Hadiah', icon: Gift },
+];
 
 export default function AdminDashboard() {
   const { products, isLoading, logout, addProduct, updateProduct, deleteProduct, refreshProducts } = useAdmin();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const selectedCatObj = CATEGORY_OPTIONS.find((c) => c.id === selectedCategory) || CATEGORY_OPTIONS[0];
+  const SelectedIcon = selectedCatObj.icon;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -130,9 +141,6 @@ export default function AdminDashboard() {
                 <span className="font-serif font-medium text-stone-900 text-sm sm:text-base">
                   Florea Florist
                 </span>
-                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-pink-50 text-[#E60067] border border-pink-200/60">
-                  Katalog Manager
-                </span>
               </div>
               <p className="text-[11px] text-stone-400 hidden sm:block">
                 Kelola foto, harga, dimensi rangkaian, dan detail spesifikasi
@@ -163,217 +171,245 @@ export default function AdminDashboard() {
       </header>
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-8">
-        {/* Metric Overview Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div className="p-4 rounded-xl bg-white border border-stone-200/80 shadow-2xs">
-            <div className="flex items-center justify-between text-stone-500 mb-2">
-              <span className="text-xs font-medium uppercase tracking-wider">Total Mahakarya</span>
-              <Layers className="w-4 h-4 text-stone-400" />
-            </div>
-            <div className="text-2xl font-semibold text-stone-900">
-              {products.length} <span className="text-xs font-normal text-stone-400">item</span>
-            </div>
+      <main className="max-w-7xl mx-auto px-3 sm:px-8 pt-4 sm:pt-6">
+        {/* Metric Overview Row (Simple Clean Numbers) */}
+        <div className="flex items-center justify-around py-3 px-2 sm:px-6 bg-white/70 rounded-2xl border border-stone-200/60 shadow-2xs mb-4 sm:mb-6">
+          <div className="flex flex-col items-center text-center px-2">
+            <span className="text-xl sm:text-2xl font-bold text-[#E60067] leading-none">
+              {products.length}
+            </span>
+            <span className="text-[9px] sm:text-[11px] font-semibold text-[#E60067] uppercase tracking-wider mt-1.5">
+              Total Koleksi
+            </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-white border border-stone-200/80 shadow-2xs">
-            <div className="flex items-center justify-between text-stone-500 mb-2">
-              <span className="text-xs font-medium uppercase tracking-wider">Koleksi Terpopuler</span>
-              <Sparkles className="w-4 h-4 text-[#E60067]" />
-            </div>
-            <div className="text-2xl font-semibold text-stone-900">
-              {products.filter((p) => p.isPopular).length}{' '}
-              <span className="text-xs font-normal text-stone-400">unggulan</span>
-            </div>
+          <div className="w-[1px] h-7 bg-stone-200/60" />
+
+          <div className="flex flex-col items-center text-center px-2">
+            <span className="text-xl sm:text-2xl font-bold text-[#E60067] leading-none">
+              {products.filter((p) => p.isPopular).length}
+            </span>
+            <span className="text-[9px] sm:text-[11px] font-semibold text-[#E60067] uppercase tracking-wider mt-1.5">
+              Favorit
+            </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-white border border-stone-200/80 shadow-2xs flex flex-col justify-between">
-            <div className="flex items-center justify-between text-stone-500 mb-1">
-              <span className="text-xs font-medium uppercase tracking-wider">Status Sync</span>
-              <TrendingUp className="w-4 h-4 text-emerald-600" />
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-emerald-600">Terhubung</span>
-              <button
-                onClick={async () => {
-                  await refreshProducts();
-                  showToast('Katalog berhasil disinkronkan', 'info');
-                }}
-                className="text-[11px] text-stone-500 hover:text-stone-800 flex items-center gap-1 hover:underline cursor-pointer"
-                title="Muat ulang katalog produk"
-              >
-                <RotateCcw className="w-3 h-3" /> Refresh
-              </button>
-            </div>
+          <div className="w-[1px] h-7 bg-stone-200/60" />
+
+          <div className="flex flex-col items-center text-center px-2">
+            <span className="text-xl sm:text-2xl font-bold text-[#E60067] leading-none">
+              {products.filter((p) => p.category === 'artistic').length}
+            </span>
+            <span className="text-[9px] sm:text-[11px] font-semibold text-[#E60067] uppercase tracking-wider mt-1.5">
+              Artistik
+            </span>
+          </div>
+
+          <div className="w-[1px] h-7 bg-stone-200/60" />
+
+          <div className="flex flex-col items-center text-center px-2">
+            <span className="text-xl sm:text-2xl font-bold text-[#E60067] leading-none">
+              {products.filter((p) => p.category === 'celebration' || p.category === 'personal').length}
+            </span>
+            <span className="text-[9px] sm:text-[11px] font-semibold text-[#E60067] uppercase tracking-wider mt-1.5">
+              Momen & Hadiah
+            </span>
           </div>
         </div>
 
         {/* Action & Filter Toolbar */}
-        <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-2xs mb-6 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="bg-white p-3 sm:p-4 rounded-2xl border border-stone-200/80 shadow-2xs mb-4 sm:mb-6 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
             {/* Search */}
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Cari nama, bahan, atau koleksi..."
-                className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-stone-200 focus:outline-none focus:border-[#E60067] focus:ring-1 focus:ring-[#E60067]"
+                placeholder="Cari nama atau bahan..."
+                className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl border border-stone-200 focus:outline-none focus:border-[#E60067] focus:ring-1 focus:ring-[#E60067] bg-stone-50/50"
               />
             </div>
 
             {/* Add Button */}
             <button
               onClick={handleOpenAddModal}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#E60067] hover:bg-[#CC005A] text-white text-xs font-semibold shadow-xs transition active:scale-[0.98] cursor-pointer"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-[#E60067] hover:bg-[#CC005A] text-white text-xs sm:text-sm font-medium shadow-xs transition active:scale-[0.98] cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Tambah Mahakarya</span>
             </button>
           </div>
 
-          {/* Categories Pill Filter */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-            <SlidersHorizontal className="w-3.5 h-3.5 text-stone-400 shrink-0 mr-1" />
-            {[
-              { id: 'all', label: 'Semua Koleksi' },
-              { id: 'artistic', label: 'Buket Bunga Artistik' },
-              { id: 'celebration', label: 'Perayaan & Momen' },
-              { id: 'personal', label: 'Personalisasi & Hadiah' },
-            ].map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`px-3 py-1 rounded-full whitespace-nowrap transition cursor-pointer ${
-                  selectedCategory === cat.id
-                    ? 'bg-stone-900 text-white font-medium'
-                    : 'bg-stone-100 hover:bg-stone-200 text-stone-600'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+          {/* Categories Filter: Interactive Dropdown with icon & label */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+              className="w-full sm:w-auto min-w-[240px] flex items-center justify-between gap-2.5 px-3 py-2 rounded-xl border border-stone-200 bg-stone-50/70 hover:bg-stone-100 text-stone-800 text-xs font-medium transition cursor-pointer"
+            >
+              <div className="flex items-center gap-2 truncate">
+                <SelectedIcon className="w-4 h-4 text-[#E60067] shrink-0" />
+                <span className="truncate">{selectedCatObj.label}</span>
+              </div>
+              <ChevronDown className={`w-3.5 h-3.5 text-stone-400 transition-transform duration-200 ${isCategoryOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {isCategoryOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setIsCategoryOpen(false)}
+                />
+                <div className="absolute left-0 top-full mt-1.5 w-full sm:w-72 bg-white rounded-xl border border-stone-200 shadow-xl z-50 py-1 overflow-hidden animate-in fade-in duration-150">
+                  {CATEGORY_OPTIONS.map((cat) => {
+                    const Icon = cat.icon;
+                    const isSelected = selectedCategory === cat.id;
+                    const count = cat.id === 'all'
+                      ? products.length
+                      : products.filter((p) => p.category === cat.id).length;
+
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedCategory(cat.id);
+                          setIsCategoryOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-3.5 py-2.5 text-xs text-left transition cursor-pointer ${
+                          isSelected
+                            ? 'bg-pink-50/70 text-[#E60067] font-semibold'
+                            : 'text-stone-700 hover:bg-stone-50'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 truncate">
+                          <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-[#E60067]' : 'text-stone-400'}`} />
+                          <span className="truncate">{cat.label}</span>
+                        </div>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${isSelected ? 'bg-[#E60067]/10 text-[#E60067]' : 'bg-stone-100 text-stone-500'}`}>
+                          {count}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </div>
         </div>
 
         {/* Product Cards Table/Grid */}
         <div className="bg-white rounded-2xl border border-stone-200/80 shadow-2xs overflow-hidden">
-          <div className="px-6 py-4 border-b border-stone-100 flex items-center justify-between bg-stone-50/50">
+          <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-stone-100 flex items-center justify-between bg-stone-50/50">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-stone-700">
-              Daftar Mahakarya & Katalog ({filteredProducts.length})
+              Daftar Mahakarya ({filteredProducts.length})
             </h2>
-            <span className="text-[11px] text-stone-400">
-              Format detail mendukung gambar multi-slide, variasi dimensi, dan spesifikasi
+            <span className="text-[11px] text-stone-400 hidden sm:inline">
+              Kelola foto, harga, dimensi, dan detail katalog
             </span>
           </div>
 
           {filteredProducts.length === 0 ? (
-            <div className="p-12 text-center">
-              <p className="text-sm text-stone-500">Tidak ada mahakarya yang cocok dengan kriteria pencarian.</p>
+            <div className="p-10 text-center">
+              <p className="text-xs sm:text-sm text-stone-500">Tidak ada mahakarya yang cocok dengan kriteria.</p>
             </div>
           ) : (
             <div className="divide-y divide-stone-100">
               {filteredProducts.map((p) => (
                 <div
                   key={p.id}
-                  className="p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-stone-50/60 transition"
+                  className="p-3 sm:p-4 flex items-center justify-between gap-3 hover:bg-stone-50/60 transition"
                 >
-                    {/* Left: Thumbnail & Info */}
-                    <div className="flex items-start gap-3.5 min-w-0">
-                      <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border border-stone-200/80 bg-stone-100 shrink-0">
-                        <Image
-                          src={p.image}
-                          alt={p.name}
-                          fill
-                          className="object-cover"
-                          unoptimized
-                        />
-                      </div>
-
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-[#E60067]">
-                            {getCategoryLabel(p)}
-                          </span>
-                          {p.isPopular && (
-                            <span className="text-[9px] uppercase font-semibold px-1.5 py-0.2 rounded bg-amber-50 text-amber-700 border border-amber-200">
-                              Favorit
-                            </span>
-                          )}
-                        </div>
-
-                        <h3 className="text-sm font-semibold text-stone-900 truncate">
-                          {p.name}
-                        </h3>
-
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs font-semibold text-stone-900">
-                            {formatPrice(p.price)}
-                          </span>
-                          {p.originalPrice && (
-                            <span className="text-[10px] text-stone-400 line-through">
-                              {formatPrice(p.originalPrice)}
-                            </span>
-                          )}
-                        </div>
-
-                        <p className="text-[11px] text-stone-500 line-clamp-1 mt-1">
-                          <span className="font-medium text-stone-600">Bahan:</span> {p.material} •{' '}
-                          <span className="font-medium text-stone-600">Rangkaian:</span>{' '}
-                          {p.details?.arrangementStyle || 'Korean Haute Couture Floral Architecture'}
-                        </p>
-                      </div>
+                  {/* Left: Thumbnail & Concise Info */}
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="relative w-12 h-12 sm:w-16 sm:h-16 rounded-lg overflow-hidden border border-stone-200 bg-stone-100 shrink-0">
+                      <Image
+                        src={p.image}
+                        alt={p.name}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
                     </div>
 
-                    {/* Right: Actions */}
-                    <div className="flex items-center gap-2 w-full sm:w-auto justify-end pt-2 sm:pt-0 border-t sm:border-0 border-stone-100">
-                      <Link
-                        href={`/product/${p.id}`}
-                        target="_blank"
-                        className="p-2 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-lg transition"
-                        title="Lihat halaman detail mahakarya di website"
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                      </Link>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <span className="text-[10px] font-medium text-[#E60067] truncate">
+                          {getCategoryShortLabel(p)}
+                        </span>
+                        {p.isPopular && (
+                          <span className="text-[9px] uppercase font-semibold px-1 py-0.2 rounded bg-amber-50 text-amber-700 border border-amber-200 shrink-0">
+                            Favorit
+                          </span>
+                        )}
+                      </div>
 
-                      <button
-                        onClick={() => handleOpenEditModal(p)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-lg transition cursor-pointer"
-                        title="Sunting mahakarya"
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                        <span>Edit</span>
-                      </button>
+                      <h3 className="text-xs sm:text-sm font-semibold text-stone-900 truncate">
+                        {p.name}
+                      </h3>
 
-                      {deleteConfirmId === p.id ? (
-                        <div className="flex items-center gap-1.5">
-                          <button
-                            onClick={() => handleDeleteProduct(p.id, p.name)}
-                            className="px-2.5 py-1 text-xs font-medium text-white bg-rose-600 hover:bg-rose-700 rounded-lg transition cursor-pointer"
-                          >
-                            Hapus
-                          </button>
-                          <button
-                            onClick={() => setDeleteConfirmId(null)}
-                            className="px-2 py-1 text-xs text-stone-500 hover:bg-stone-100 rounded-lg transition cursor-pointer"
-                          >
-                            Batal
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => setDeleteConfirmId(p.id)}
-                          className="p-2 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
-                          title="Hapus mahakarya"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      )}
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-xs font-semibold text-stone-900">
+                          {formatPrice(p.price)}
+                        </span>
+                        {p.originalPrice && (
+                          <span className="text-[10px] text-stone-400 line-through">
+                            {formatPrice(p.originalPrice)}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                ))
-              }
+
+                  {/* Right: Compact Actions */}
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Link
+                      href={`/product/${p.id}`}
+                      target="_blank"
+                      className="p-2 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-lg transition"
+                      title="Lihat produk publik"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    </Link>
+
+                    <button
+                      onClick={() => handleOpenEditModal(p)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-lg transition cursor-pointer active:scale-95"
+                      title="Sunting"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Edit</span>
+                    </button>
+
+                    {deleteConfirmId === p.id ? (
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => handleDeleteProduct(p.id, p.name)}
+                          className="px-2 py-1 text-xs font-medium text-white bg-rose-600 hover:bg-rose-700 rounded-lg transition cursor-pointer"
+                        >
+                          Ya
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirmId(null)}
+                          className="px-2 py-1 text-xs text-stone-500 hover:bg-stone-100 rounded-lg transition cursor-pointer"
+                        >
+                          Batal
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setDeleteConfirmId(p.id)}
+                        className="p-2 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
+                        title="Hapus"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

@@ -22,7 +22,7 @@ export function Footer() {
             </div>
             
             <p className="text-xs text-stone-400 leading-relaxed max-w-sm mb-4">
-              Atelier perangkai buket bunga sutra premium & preserved flower abadi. Merawat rasa, merayakan pencapaian, dan menghadirkan pengalaman berkelas tanpa batas waktu.
+              Perangkai buket bunga sutra premium & preserved flower abadi. Merawat rasa, merayakan pencapaian, dan menghadirkan pengalaman berkelas tanpa batas waktu.
             </p>
 
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-stone-400">
@@ -88,13 +88,13 @@ export function Footer() {
           {/* Studio & Order Info (Col 4) */}
           <div className="md:col-span-4 flex flex-col justify-start">
             <h4 className="text-xs font-semibold text-white uppercase tracking-wider mb-4 leading-6">
-              Layanan Pribadi & Atelier
+              Layanan Pribadi & Studio
             </h4>
             <div className="space-y-3 text-xs text-stone-400">
               <div className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-medium text-stone-300 block">Atelier & Studio:</span>
+                  <span className="font-medium text-stone-300 block">Studio & Workshop:</span>
                   <span>Jl. Raya Curug No.60, Curug, Kec. Bojongsari, Kota Depok, Jawa Barat 16517</span>
                 </div>
               </div>
@@ -115,7 +115,7 @@ export function Footer() {
             className="inline-flex items-center gap-1.5 text-stone-400 hover:text-stone-200 transition text-[11px]"
           >
             <Shield className="w-3.5 h-3.5" />
-            <span>Portal Admin Atelier</span>
+            <span>Portal Admin</span>
           </Link>
         </div>
 

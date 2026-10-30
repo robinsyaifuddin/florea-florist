@@ -27,9 +27,6 @@ export default function ProductDetailClient({
   relatedProducts,
 }: ProductDetailClientProps) {
   const [selectedSizeIndex, setSelectedSizeIndex] = useState(0);
-  const [selectedColor, setSelectedColor] = useState(
-    product.colors && product.colors.length > 0 ? product.colors[0].name : 'Default'
-  );
   const [cardMessage, setCardMessage] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -72,9 +69,24 @@ export default function ProductDetailClient({
     }).format(val);
   };
 
-  const handleCopyLink = () => {
-    if (typeof window !== 'undefined') {
-      navigator.clipboard.writeText(window.location.href);
+  const handleCopyLink = async () => {
+    const currentUrl = typeof window !== 'undefined' ? window.location.href : `https://florea.web.id/product/${product.id}`;
+    
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: `${product.name} | Floréa Florist`,
+          text: `Lihat rangkaian buket ${product.name} di Floréa Florist:`,
+          url: currentUrl,
+        });
+        return;
+      } catch (err) {
+        // Fallback to clipboard if share was cancelled or failed
+      }
+    }
+
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      await navigator.clipboard.writeText(currentUrl);
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2000);
     }
@@ -83,16 +95,18 @@ export default function ProductDetailClient({
   const handleOrderWhatsApp = () => {
     const phoneNumber = '62895705032933'; // CS WhatsApp
     const selectedSizeName = sizes[selectedSizeIndex]?.name || 'Standard';
+    const siteOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://florea.web.id';
+    const productLink = `${siteOrigin}/product/${product.id}`;
 
     const message = `Halo Floréa Florist, saya ingin melakukan pemesanan buket istimewa berikut:
 
 • *Karya Pilihan*: ${product.name}
 • *Kategori*: ${getCategoryLabel(product)}
 • *Ukuran Rangkaian*: ${selectedSizeName}
-${product.colors ? `• *Nuansa Warna*: ${selectedColor}\n` : ''}• *Jumlah*: ${quantity} buket
+• *Jumlah*: ${quantity} buket
 • *Total Estimasi*: ${formatPrice(currentPrice * quantity)}
 ${cardMessage.trim() ? `• *Pesan Personal di Kartu*: "${cardMessage.trim()}"\n` : '• *Pesan Kartu*: (Tanpa kartu ucapan)\n'}
-Tautan Produk: ${typeof window !== 'undefined' ? window.location.href : ''}
+Tautan Produk: ${productLink}
 
 Mohon konfirmasi ketersediaan slot rangkaian dan jadwal pengirimannya. Terima kasih!`;
 
@@ -192,56 +206,41 @@ Mohon konfirmasi ketersediaan slot rangkaian dan jadwal pengirimannya. Terima ka
             {product.description}
           </p>
 
-          {/* Size Options */}
+          {/* Size Options (Dropdown / Select atau List Baris ke Bawah) */}
           <div className="mb-3">
-            <label className="block text-[10px] font-semibold text-stone-900 uppercase tracking-wider mb-1.5">
+            <label htmlFor="size-select" className="block text-[10px] font-semibold text-stone-900 uppercase tracking-wider mb-1.5">
               Dimensi & Kemewahan Rangkaian
             </label>
-            <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-              {sizes.map((s, idx) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => setSelectedSizeIndex(idx)}
-                  className={`p-2 rounded-lg border text-left flex flex-col justify-between transition-all cursor-pointer ${
-                    selectedSizeIndex === idx
-                      ? 'border-[#E60067] bg-[#E60067]/5 ring-1 ring-[#E60067]'
-                      : 'border-stone-200 bg-white hover:border-stone-300'
-                  }`}
-                >
-                  <span className="text-[11px] font-semibold text-stone-900 leading-tight mb-0.5">{s.name}</span>
-                  <span className="text-[10px] text-stone-500">{formatPrice(s.price)}</span>
-                </button>
-              ))}
+            <div className="flex flex-col gap-1.5">
+              {sizes.map((s, idx) => {
+                const isSelected = selectedSizeIndex === idx;
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => setSelectedSizeIndex(idx)}
+                    className={`w-full p-2.5 border text-left flex items-center justify-between transition-colors cursor-pointer rounded-none ${
+                      isSelected
+                        ? 'border-stone-900 bg-stone-50 font-medium'
+                        : 'border-stone-300 bg-white hover:border-stone-400'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div
+                        className={`w-3.5 h-3.5 border flex items-center justify-center rounded-none transition-colors ${
+                          isSelected ? 'border-stone-900 bg-stone-900' : 'border-stone-400 bg-white'
+                        }`}
+                      >
+                        {isSelected && <div className="w-1.5 h-1.5 bg-white" />}
+                      </div>
+                      <span className="text-xs text-stone-900">{s.name}</span>
+                    </div>
+                    <span className="text-xs text-stone-700 font-semibold">{formatPrice(s.price)}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
-
-          {/* Color Options (if exists) */}
-          {product.colors && product.colors.length > 0 && (
-            <div className="mb-3">
-              <label className="block text-[10px] font-semibold text-stone-900 uppercase tracking-wider mb-1">
-                Pilihan Palet Warna: <span className="text-stone-600 font-normal">{selectedColor}</span>
-              </label>
-              <div className="flex items-center gap-1.5">
-                {product.colors.map((c) => (
-                  <button
-                    key={c.name}
-                    type="button"
-                    onClick={() => setSelectedColor(c.name)}
-                    className={`w-6 h-6 rounded-full border transition cursor-pointer flex items-center justify-center ${
-                      selectedColor === c.name ? 'border-[#E60067] ring-1 ring-[#E60067] scale-105' : 'border-stone-300'
-                    }`}
-                    style={{ backgroundColor: c.value }}
-                    title={c.name}
-                  >
-                    {selectedColor === c.name && (
-                      <Check className="w-2.5 h-2.5 text-white drop-shadow-sm" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Card Message Input */}
           <div className="mb-3">
@@ -256,19 +255,19 @@ Mohon konfirmasi ketersediaan slot rangkaian dan jadwal pengirimannya. Terima ka
               rows={2}
               value={cardMessage}
               onChange={(e) => setCardMessage(e.target.value)}
-              placeholder="Tuliskan pesan tulus Anda di sini (contoh: Selamat atas kelulusanmu, Sarah. Hari ini awal dari masa depan gemilangmu)..."
-              className="w-full text-xs p-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#E60067] focus:ring-1 focus:ring-[#E60067] bg-white resize-none transition"
+              placeholder="Tuliskan pesan tulus Anda di sini..."
+              className="w-full text-xs p-2 rounded-none border border-stone-300 focus:outline-none focus:border-stone-900 bg-white resize-none transition-colors"
             />
           </div>
 
           {/* Quantity, CTA Button, & Share */}
           <div className="flex items-center gap-2 pt-2.5 border-t border-stone-200/80 mb-3">
             {/* Quantity Selector */}
-            <div className="flex items-center border border-stone-200 rounded-lg bg-white p-0.5 shrink-0">
+            <div className="flex items-center border border-stone-300 rounded-none bg-white shrink-0">
               <button
                 type="button"
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                className="w-7 h-7 flex items-center justify-center rounded hover:bg-stone-100 text-stone-700 transition"
+                className="w-7 h-7 flex items-center justify-center rounded-none hover:bg-stone-100 text-stone-700 transition"
               >
                 <Minus className="w-3 h-3" />
               </button>
@@ -278,7 +277,7 @@ Mohon konfirmasi ketersediaan slot rangkaian dan jadwal pengirimannya. Terima ka
               <button
                 type="button"
                 onClick={() => setQuantity((q) => q + 1)}
-                className="w-7 h-7 flex items-center justify-center rounded hover:bg-stone-100 text-stone-700 transition"
+                className="w-7 h-7 flex items-center justify-center rounded-none hover:bg-stone-100 text-stone-700 transition"
               >
                 <Plus className="w-3 h-3" />
               </button>
@@ -287,16 +286,16 @@ Mohon konfirmasi ketersediaan slot rangkaian dan jadwal pengirimannya. Terima ka
             {/* Tombol Pesan Sekarang */}
             <button
               onClick={handleOrderWhatsApp}
-              className="flex-1 py-2.5 sm:py-3 px-4 sm:px-6 rounded-full bg-[#E60067] hover:bg-[#CC005A] text-white text-xs sm:text-sm font-semibold tracking-wide flex items-center justify-center transition duration-150 active:scale-[0.98] shadow-xs cursor-pointer min-w-0"
+              className="flex-1 py-2.5 sm:py-3 px-4 sm:px-6 rounded-none bg-[#E60067] hover:bg-[#CC005A] text-white text-xs sm:text-sm font-semibold tracking-wide flex items-center justify-center transition duration-150 active:scale-[0.98] cursor-pointer min-w-0"
             >
-              <span className="truncate">Reservasi Sekarang</span>
+              <span className="truncate">Pesan Sekarang</span>
             </button>
 
             {/* Share / Copy Link */}
             <button
               onClick={handleCopyLink}
               title="Bagikan Tautan Produk"
-              className="p-2 sm:p-2.5 rounded-lg border border-stone-200 hover:border-stone-300 text-stone-700 bg-white transition flex items-center justify-center active:scale-95 cursor-pointer shrink-0"
+              className="p-2 sm:p-2.5 rounded-none border border-stone-300 hover:border-stone-400 text-stone-700 bg-white transition flex items-center justify-center active:scale-95 cursor-pointer shrink-0"
             >
               {copiedLink ? (
                 <Check className="w-3.5 h-3.5 text-emerald-600" />

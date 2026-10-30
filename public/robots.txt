@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://floreaflorist.com/sitemap.xml
+Sitemap: https://florea.web.id/sitemap.xml

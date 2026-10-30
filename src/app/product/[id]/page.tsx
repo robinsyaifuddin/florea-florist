@@ -24,13 +24,34 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://florea.web.id';
+  const productUrl = `${siteUrl}/product/${product.id}`;
+
   return {
     title: `${product.name} | Floréa Florist`,
     description: product.description,
+    alternates: {
+      canonical: `/product/${product.id}`,
+    },
     openGraph: {
-      title: product.name,
+      title: `${product.name} | Floréa Florist`,
       description: product.description,
-      images: [{ url: product.image }],
+      url: productUrl,
+      type: 'article',
+      images: [
+        {
+          url: product.image,
+          width: 800,
+          height: 800,
+          alt: product.name,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${product.name} | Floréa Florist`,
+      description: product.description,
+      images: [product.image],
     },
   };
 }

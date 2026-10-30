@@ -18,7 +18,7 @@ const jakarta = Plus_Jakarta_Sans({
   display: 'swap',
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://floreaflorist.com';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://florea.web.id';
 
 export const viewport: Viewport = {
   themeColor: '#FAF8F5',
@@ -29,11 +29,11 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Floréa Florist | Atelier Buket Bunga Sutra Premium, Wisuda & Preserved Flower',
+    default: 'Floréa Florist | Buket Bunga Sutra Premium, Wisuda & Preserved Flower',
     template: '%s | Floréa Florist',
   },
   description:
-    'Floréa Florist Atelier: Menghadirkan pengalaman berkesan dengan buket bunga sutra premium, buket wisuda prestisius, preserved flower, dan bloom box abadi. Pengiriman aman seluruh Indonesia.',
+    'Floréa Florist: Menghadirkan pengalaman berkesan dengan buket bunga sutra premium, buket wisuda prestisius, preserved flower, dan bloom box abadi. Pengiriman aman seluruh Indonesia.',
   keywords: [
     'buket bunga',
     'toko buket terdekat',

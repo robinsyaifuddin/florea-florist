@@ -15,7 +15,7 @@ export function QuickOrderModal({ product, onClose }: QuickOrderModalProps) {
   const [deliveryDate, setDeliveryDate] = useState('');
   const [deliveryTime, setDeliveryTime] = useState('Pagi (09.00 - 12.00)');
   const [cardMessage, setCardMessage] = useState('');
-  const [wrapColor, setWrapColor] = useState('Signature Atelier Neutral (Rekomendasi Florist)');
+  const [wrapColor, setWrapColor] = useState('Signature Neutral (Rekomendasi Florist)');
   const [deliveryAddress, setDeliveryAddress] = useState('');
 
   if (!product) return null;
@@ -32,12 +32,16 @@ export function QuickOrderModal({ product, onClose }: QuickOrderModalProps) {
     e.preventDefault();
 
     const phoneNumber = '62895705032933'; // Nomor CS Florist
+    const siteOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://florea.web.id';
+    const productLink = `${siteOrigin}/product/${product.id}`;
+
     const message = `*PESANAN BUKET FLOREA FLORIST*
 
 • *Item*: ${product.name}
 • *Kategori*: ${getCategoryLabel(product)}
 • *Harga*: ${formatPrice(product.price)}
 • *Tipe Wrapping*: ${wrapColor}
+• *Tautan Produk*: ${productLink}
 
 *DETAIL PENGIRIMAN*:
 • *Nama Penerima*: ${recipientName || '-'}
@@ -62,7 +66,7 @@ Mohon konfirmasi ketersediaan slot rangkaian untuk jadwal di atas. Terima kasih!
         <div className="px-6 py-4 border-b border-stone-200 flex items-center justify-between bg-stone-50/50">
           <div>
             <h3 className="font-serif font-semibold text-lg text-stone-900">
-              Reservasi Rangkaian Eksklusif
+              Pemesanan Rangkaian Eksklusif
             </h3>
             <p className="text-[11px] text-stone-500 font-sans">
               Terhubung langsung dengan Master Florist kami via WhatsApp Concierge
@@ -107,8 +111,8 @@ Mohon konfirmasi ketersediaan slot rangkaian untuk jadwal di atas. Terima kasih!
                 onChange={(e) => setWrapColor(e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-800 focus:outline-none focus:border-stone-900 transition"
               >
-                <option value="Signature Atelier Neutral (Rekomendasi Florist)">
-                  Signature Atelier Neutral (Rekomendasi Florist)
+                <option value="Signature Neutral (Rekomendasi Florist)">
+                  Signature Neutral (Rekomendasi Florist)
                 </option>
                 <option value="Soft Blush Rose & Champagne Silk">
                   Soft Blush Rose & Champagne Silk

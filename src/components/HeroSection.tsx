@@ -16,7 +16,7 @@ export function HeroSection() {
               <div className="shrink-0">
                 {/* Kicker subtitle */}
                 <span className="text-[10px] sm:text-xs lg:text-sm font-semibold tracking-widest text-[#E60067] uppercase mb-1 sm:mb-3 block">
-                  Buket Bunga Eksklusif
+                  Flowers and Gift
                 </span>
 
                 {/* Headline */}
@@ -25,14 +25,14 @@ export function HeroSection() {
                   <span className="block whitespace-nowrap">
                     Begitu Pula{' '}
                     <span className="font-serif italic text-[#E60067]">
-                      Buket Anda.
+                      Cerita Anda.
                     </span>
                   </span>
                 </h1>
               </div>
 
               {/* Bunga Kecil Khusus Mobile */}
-              <div className="lg:hidden shrink-0 relative flex items-center justify-center -ml-1 sm:ml-0">
+              <div className="lg:hidden shrink-0 relative flex items-center justify-center ml-1 sm:ml-2">
                 <div className="relative w-[88px] h-[104px] min-[390px]:w-[100px] min-[390px]:h-[116px] bg-[#FCE8F0] rounded-t-full rounded-b-2xl flex items-center justify-center shadow-xs overflow-visible">
                   <div className="relative w-[110%] h-[110%] translate-y-1">
                     <Image
@@ -49,7 +49,7 @@ export function HeroSection() {
             </div>
 
             <p className="text-stone-600 text-sm sm:text-base lg:text-[17px] leading-relaxed max-w-lg mb-6 sm:mb-8 font-normal">
-              Kami tidak sekadar merangkai bunga. Kami menghadirkan pengalaman menerima karya seni floral mewah, abadi, dan sarat makna untuk orang paling istimewa.
+              Kami tidak sekadar merangkai bunga. Florea menghadirkan karya seni floral mewah dan abadi dengan merawat setiap momen berharga bagi orang paling istimewa.
             </p>
 
             {/* Tombol Aksi Kiri */}

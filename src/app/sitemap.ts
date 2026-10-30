@@ -1,10 +1,15 @@
 import { MetadataRoute } from 'next';
 import { PRODUCTS } from '@/data/products';
+import { getProducts } from '@/lib/supabase/products';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://floreaflorist.com';
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://florea.web.id';
 
-  const productUrls = PRODUCTS.map((product) => ({
+  // Dapatkan produk statis + produk database Supabase secara aman
+  const dbProducts = await getProducts().catch(() => []);
+  const allProducts = dbProducts.length > 0 ? dbProducts : PRODUCTS;
+
+  const productUrls = allProducts.map((product) => ({
     url: `${baseUrl}/product/${product.id}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
@@ -17,6 +22,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: 'daily' as const,
       priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/collections`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
     },
     ...productUrls,
   ];

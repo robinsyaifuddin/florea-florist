@@ -12,26 +12,43 @@ import {
 interface AdminContextType {
   products: Product[];
   isLoading: boolean;
+  isCheckingAuth: boolean;
   isAuthenticated: boolean;
-  login: (password: string) => boolean;
-  logout: () => void;
+  login: (password: string) => Promise<{ success: boolean; error?: string }>;
+  logout: () => Promise<void>;
   addProduct: (product: Omit<Product, 'id'>) => Promise<void>;
   updateProduct: (id: string, product: Partial<Product>) => Promise<void>;
   deleteProduct: (id: string) => Promise<void>;
   refreshProducts: () => Promise<void>;
 }
 
-const STORAGE_KEY_AUTH = 'florea_admin_auth';
-const ADMIN_SECRET = 'admin123';
-
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export function AdminProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  // Ambil data langsung dari Supabase
+  // Periksa sesi login yang tersimpan di HttpOnly Cookie via server
+  const checkSession = useCallback(async () => {
+    try {
+      setIsCheckingAuth(true);
+      const res = await fetch('/api/admin/session', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        setIsAuthenticated(Boolean(data.authenticated));
+      } else {
+        setIsAuthenticated(false);
+      }
+    } catch {
+      setIsAuthenticated(false);
+    } finally {
+      setIsCheckingAuth(false);
+    }
+  }, []);
+
+  // Ambil data produk
   const refreshProducts = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -45,29 +62,46 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    try {
-      const storedAuth = localStorage.getItem(STORAGE_KEY_AUTH);
-      if (storedAuth === 'true') {
-        setIsAuthenticated(true);
-      }
-    } catch {
-      // Ignore
-    }
+    checkSession();
     refreshProducts();
-  }, [refreshProducts]);
+  }, [checkSession, refreshProducts]);
 
-  const login = (password: string): boolean => {
-    if (password === ADMIN_SECRET) {
-      setIsAuthenticated(true);
-      localStorage.setItem(STORAGE_KEY_AUTH, 'true');
-      return true;
+  // Login aman lewat API server
+  const login = async (password: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setIsAuthenticated(true);
+        return { success: true };
+      }
+
+      return {
+        success: false,
+        error: data.error || 'Kata sandi tidak valid. Silakan coba lagi.',
+      };
+    } catch {
+      return {
+        success: false,
+        error: 'Terjadi gangguan koneksi. Silakan coba sesaat lagi.',
+      };
     }
-    return false;
   };
 
-  const logout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem(STORAGE_KEY_AUTH);
+  // Logout aman dengan membersihkan cookie di server
+  const logout = async () => {
+    try {
+      await fetch('/api/admin/logout', { method: 'POST' });
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      setIsAuthenticated(false);
+    }
   };
 
   // CRUD Supabase
@@ -112,6 +146,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       value={{
         products,
         isLoading,
+        isCheckingAuth,
         isAuthenticated,
         login,
         logout,

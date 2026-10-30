@@ -13,8 +13,8 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Layanan Eksklusif & Informasi Atelier | Floréa Florist',
-  description: 'Layanan konsultasi concierge Floréa Florist, lokasi atelier workshop, jadwal pemesanan, kontak resmi WhatsApp, dan panduan reservasi buket abadi.',
+  title: 'Layanan Eksklusif & Informasi Pemesanan | Floréa Florist',
+  description: 'Layanan konsultasi concierge Floréa Florist, lokasi studio workshop, jadwal pemesanan, kontak resmi WhatsApp, dan panduan pemesanan buket abadi.',
 };
 
 const faqs = [
@@ -24,7 +24,7 @@ const faqs = [
   },
   {
     q: 'Dapatkah saya mengkustomisasi nuansa warna wrap, jenis bunga, dan pita?',
-    a: 'Dengan senang hati. Atelier kami memberikan kebebasan bagi Anda untuk mengombinasikan warna Korean matte paper, warna pita satin, hingga jenis bunga sesuai impresi dan pesan mendalam yang ingin Anda sampaikan.'
+    a: 'Dengan senang hati. Florist kami memberikan kebebasan bagi Anda untuk mengombinasikan warna Korean matte paper, warna pita satin, hingga jenis bunga sesuai impresi dan pesan mendalam yang ingin Anda sampaikan.'
   },
   {
     q: 'Bagaimana keamanan pengiriman jarak jauh ke luar kota di seluruh Indonesia?',
@@ -35,8 +35,8 @@ const faqs = [
     a: 'Untuk koleksi kurasi siap kirim, kami menyediakan layanan Same-Day Delivery instan. Sementara untuk kreasi kustom personal, Master Florist kami memerlukan waktu 1–2 hari kerja untuk merangkai setiap helai dengan ketelitian tertinggi.'
   },
   {
-    q: 'Bagaimana langkah termudah untuk melakukan reservasi atau konsultasi?',
-    a: 'Anda dapat menekan tombol konsultasi atau reservasi di katalog untuk langsung terhubung dengan Concierge WhatsApp kami. Kami akan mendampingi Anda memilih rangkaian yang paling merepresentasikan perasaan Anda.'
+    q: 'Bagaimana langkah termudah untuk melakukan pemesanan atau konsultasi?',
+    a: 'Anda dapat menekan tombol konsultasi atau pesan di katalog untuk langsung terhubung dengan Concierge WhatsApp kami. Kami akan mendampingi Anda memilih rangkaian yang paling merepresentasikan perasaan Anda.'
   }
 ];
 
@@ -57,11 +57,11 @@ export default function ContactPage() {
 
             <div className="max-w-3xl">
               <span className="text-[11px] sm:text-xs font-semibold tracking-widest text-[#E60067] uppercase mb-3 block">
-                Concierge & Informasi Atelier
+                Concierge & Informasi Florist
               </span>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight leading-tight mb-4">
                 Konsultasikan Mahakarya Anda & <br className="hidden sm:inline" />
-                <span className="italic font-serif text-[#E60067]">Atelier Floréa Florist</span>
+                <span className="italic font-serif text-[#E60067]">Floréa Florist</span>
               </h1>
               <p className="text-sm sm:text-base text-stone-600 leading-relaxed">
                 Kami siap mendampingi Anda memilih atau merancang rangkaian floral terbaik untuk menyentuh hati seseorang yang paling berharga.
@@ -79,7 +79,7 @@ export default function ContactPage() {
               <div className="lg:col-span-5 space-y-6">
                 <div className="bg-white p-6 sm:p-8 rounded-2xl border border-stone-200/80 shadow-xs">
                   <h2 className="text-lg font-serif font-semibold text-stone-900 mb-6 pb-3 border-b border-stone-100">
-                    Layanan Konsultasi Pribadi & Reservasi
+                    Layanan Konsultasi Pribadi & Pemesanan
                   </h2>
 
                   <div className="space-y-5">
@@ -109,10 +109,10 @@ export default function ContactPage() {
                       <div>
                         <p className="text-xs text-stone-400 font-medium">Email Informasi & Kerjasama</p>
                         <a 
-                          href="mailto:contact@floreaflorist.com"
+                          href="mailto:contact@florea.web.id"
                           className="text-sm sm:text-base font-semibold text-stone-900 hover:text-[#E60067] transition block mt-0.5"
                         >
-                          contact@floreaflorist.com
+                          contact@florea.web.id
                         </a>
                       </div>
                     </div>
