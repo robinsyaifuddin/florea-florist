@@ -1,5 +1,5 @@
 import { createClient } from './client';
-import { Product } from '@/data/products';
+import { Product, PRODUCTS } from '@/data/products';
 import { unstable_cache } from 'next/cache';
 
 // Mapping helper dari snake_case (Supabase) ke camelCase (TypeScript Product)
