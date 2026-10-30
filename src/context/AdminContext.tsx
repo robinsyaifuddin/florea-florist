@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { Product } from '@/data/products';
+import { Product, PRODUCTS } from '@/data/products';
 import {
   getProducts as fetchProductsFromSupabase,
   createProduct as createProductInSupabase,
@@ -25,8 +25,9 @@ interface AdminContextType {
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export function AdminProvider({ children }: { children: ReactNode }) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  // Gunakan data awal dari PRODUCTS lokal agar saat pertama render atau klik halaman langsung instan tanpa blank/lag
+  const [products, setProducts] = useState<Product[]>(PRODUCTS);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
@@ -48,12 +49,13 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Ambil data produk
+  // Ambil data produk terbaru di latar belakang (revalidasi tanpa memblokir UI)
   const refreshProducts = useCallback(async () => {
     try {
-      setIsLoading(true);
       const data = await fetchProductsFromSupabase();
-      setProducts(data);
+      if (data && data.length > 0) {
+        setProducts(data);
+      }
     } catch (err) {
       console.error('Failed to load products:', err);
     } finally {

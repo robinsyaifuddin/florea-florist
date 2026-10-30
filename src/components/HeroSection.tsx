@@ -56,6 +56,7 @@ export function HeroSection() {
             <div className="flex flex-row items-center gap-2.5 sm:gap-3.5 w-full sm:w-auto">
               <Link
                 href="/collections"
+                prefetch={true}
                 className="group flex-1 sm:flex-initial inline-flex items-center justify-center px-6 sm:px-7 py-2.5 sm:py-3.5 rounded-full bg-[#E60067] hover:bg-[#CC005A] text-white text-[11px] sm:text-sm font-semibold tracking-wide transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] whitespace-nowrap"
               >
                 Eksplor Koleksi
@@ -63,6 +64,7 @@ export function HeroSection() {
 
               <Link
                 href="/contact"
+                prefetch={true}
                 className="group flex-1 sm:flex-initial inline-flex items-center justify-center px-6 sm:px-7 py-2.5 sm:py-3.5 rounded-full bg-white border border-stone-300/90 hover:border-stone-400 hover:bg-stone-50 text-stone-800 text-[11px] sm:text-sm font-semibold tracking-wide transition-all duration-200 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] whitespace-nowrap"
               >
                 Konsultasi Pribadi

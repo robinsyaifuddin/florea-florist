@@ -152,6 +152,7 @@ export function ProductCatalog({
             </button>
             <Link
               href="/collections"
+              prefetch={true}
               className="px-5 py-2.5 bg-[#E60067] text-white rounded-full text-xs font-semibold hover:bg-[#CC005A] transition-colors"
             >
               Buka Semua Koleksi

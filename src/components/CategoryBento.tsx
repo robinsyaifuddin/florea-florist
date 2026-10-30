@@ -26,6 +26,7 @@ export function CategoryBento() {
         {/* Large Feature Card (Col-span 7) */}
         <Link
           href={`/collections?category=${CATEGORIES[0].id}`}
+          prefetch={true}
           className="reveal-on-scroll lg:col-span-7 group relative h-72 sm:h-96 rounded-2xl overflow-hidden border border-stone-200 bg-stone-100 cursor-pointer transition-all duration-300 hover:border-stone-400 hover:shadow-md block"
         >
           <Image
@@ -68,6 +69,7 @@ export function CategoryBento() {
             <Link
               key={cat.id}
               href={`/collections?category=${cat.id}`}
+              prefetch={true}
               className={`reveal-on-scroll ${idx === 0 ? 'delay-100' : 'delay-200'} group relative h-48 sm:h-48 lg:h-[180px] rounded-2xl overflow-hidden border border-stone-200 bg-stone-100 cursor-pointer transition-all duration-300 hover:border-stone-400 hover:shadow-md block`}
             >
               <Image
