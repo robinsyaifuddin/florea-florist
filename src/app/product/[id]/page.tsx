@@ -11,8 +11,8 @@ interface PageProps {
   }>;
 }
 
-// Revalidasi dinamis agar produk baru langsung bisa dibuka
-export const revalidate = 0;
+// Revalidasi ISR 60 detik (sangat cepat & selalu cached di edge/server)
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;

@@ -1,5 +1,6 @@
 import { createClient } from './client';
 import { Product } from '@/data/products';
+import { unstable_cache } from 'next/cache';
 
 // Mapping helper dari snake_case (Supabase) ke camelCase (TypeScript Product)
 export function mapSupabaseToProduct(row: any): Product {
@@ -51,34 +52,71 @@ export function mapProductToSupabase(p: Partial<Product>) {
   return payload;
 }
 
-// 1. Get All Products
-export async function getProducts(): Promise<Product[]> {
-  const supabase = createClient();
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .order('created_at', { ascending: false });
+// Internal raw fetch products
+async function fetchProductsRaw(): Promise<Product[]> {
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  if (error) {
-    console.error('Error fetching products from Supabase:', error.message);
+    if (error) {
+      console.error('Error fetching products from Supabase:', error.message);
+      return [];
+    }
+    return (data || []).map(mapSupabaseToProduct);
+  } catch (err) {
+    console.error('Fetch products raw error:', err);
     return [];
   }
-  return (data || []).map(mapSupabaseToProduct);
 }
 
-// 2. Get Single Product by ID
-export async function getProductById(id: string): Promise<Product | null> {
-  const supabase = createClient();
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .eq('id', id)
-    .single();
+// Internal raw fetch product by ID
+async function fetchProductByIdRaw(id: string): Promise<Product | null> {
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .single();
 
-  if (error || !data) {
+    if (error || !data) {
+      return null;
+    }
+    return mapSupabaseToProduct(data);
+  } catch (err) {
+    console.error('Fetch product by ID raw error:', err);
     return null;
   }
-  return mapSupabaseToProduct(data);
+}
+
+// 1. Get All Products (Cached with SWR revalidate for instant response)
+export const getCachedProducts = unstable_cache(
+  async () => fetchProductsRaw(),
+  ['all-products-cache'],
+  { revalidate: 30, tags: ['products'] }
+);
+
+export async function getProducts(): Promise<Product[]> {
+  // Jika di lingkungan Next.js server, gunakan unstable_cache
+  if (typeof window === 'undefined') {
+    return getCachedProducts();
+  }
+  return fetchProductsRaw();
+}
+
+// 2. Get Single Product by ID (Cached)
+export async function getProductById(id: string): Promise<Product | null> {
+  if (typeof window === 'undefined') {
+    return unstable_cache(
+      async (prodId: string) => fetchProductByIdRaw(prodId),
+      [`product-${id}`],
+      { revalidate: 60, tags: ['products', `product-${id}`] }
+    )(id);
+  }
+  return fetchProductByIdRaw(id);
 }
 
 // 3. Create Product

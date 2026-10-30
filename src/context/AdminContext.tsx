@@ -26,14 +26,24 @@ interface AdminContextType {
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
-export function AdminProvider({ children }: { children: ReactNode }) {
-  // Inisialisasi awal produk dari cache browser (LocalStorage SWR) untuk rendering instan (<10ms)
+export function AdminProvider({
+  children,
+  initialProducts = [],
+}: {
+  children: ReactNode;
+  initialProducts?: Product[];
+}) {
+  // Inisialisasi awal produk: Prioritas 1 Server SSR, Prioritas 2 LocalStorage SWR
   const [products, setProducts] = useState<Product[]>(() => {
+    if (initialProducts && initialProducts.length > 0) {
+      return initialProducts;
+    }
     if (typeof window !== 'undefined') {
       try {
         const cached = localStorage.getItem('florea_cached_products');
         if (cached) {
-          return JSON.parse(cached);
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
         }
       } catch {
         // Abaikan kegagalan baca cache
@@ -43,7 +53,9 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(() => {
-    // Jika sudah ada data di cache, kita tidak memblokir render
+    if (initialProducts && initialProducts.length > 0) {
+      return false;
+    }
     if (typeof window !== 'undefined') {
       try {
         const cached = localStorage.getItem('florea_cached_products');
@@ -52,7 +64,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         }
       } catch {}
     }
-    return true;
+    return false; // Jangan blokir layar jika data kosong
   });
 
   const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true);
@@ -103,9 +115,20 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // Jika data dari server sudah ada, sinkronkan ke local cache
+    if (initialProducts && initialProducts.length > 0) {
+      setProducts(initialProducts);
+      syncToCache(initialProducts);
+    }
+  }, [initialProducts]);
+
+  useEffect(() => {
     checkSession();
-    refreshProducts();
-  }, [checkSession, refreshProducts]);
+    // Hanya re-fetch dari background jika belum ada data initial
+    if (!initialProducts || initialProducts.length === 0) {
+      refreshProducts();
+    }
+  }, [checkSession, refreshProducts, initialProducts]);
 
   // Real-time synchronization via Supabase Realtime & Cross-tab BroadcastChannel
   useEffect(() => {

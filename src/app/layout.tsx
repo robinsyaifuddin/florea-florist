@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { AdminProvider } from '@/context/AdminContext';
 import { ScrollRevealInit } from '@/components/ScrollRevealInit';
+import { getProducts } from '@/lib/supabase/products';
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -112,11 +113,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const initialProducts = await getProducts();
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -171,7 +173,7 @@ export default function RootLayout({
         ],
         sameAs: [
           'https://wa.me/62895705032933',
-          'https://instagram.com',
+          'https://www.instagram.com/floreabouquet.co',
           'https://tiktok.com',
           'https://shopee.co.id',
         ],
@@ -219,7 +221,7 @@ export default function RootLayout({
       </head>
       <body className="font-sans bg-[#FAF8F5] text-stone-900 antialiased selection:bg-rose-100 selection:text-rose-900 min-h-screen flex flex-col">
         <ScrollRevealInit />
-        <AdminProvider>{children}</AdminProvider>
+        <AdminProvider initialProducts={initialProducts}>{children}</AdminProvider>
       </body>
     </html>
   );

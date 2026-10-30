@@ -36,7 +36,7 @@ export function HeroSection() {
                 <div className="relative w-[88px] h-[104px] min-[390px]:w-[100px] min-[390px]:h-[116px] bg-[#FCE8F0] rounded-t-full rounded-b-2xl flex items-center justify-center shadow-xs overflow-visible">
                   <div className="relative w-[110%] h-[110%] translate-y-1">
                     <Image
-                      src="/hero-flower-new.png"
+                      src="/hero-flower-new.webp"
                       alt="Artisanal Bouquet"
                       fill
                       priority
@@ -81,7 +81,7 @@ export function HeroSection() {
               {/* Buket Bunga Berbentuk Hati Utama */}
               <div className="relative w-[340px] sm:w-[460px] lg:w-[510px] h-[400px] sm:h-[500px] lg:h-[550px] z-10 translate-y-3 sm:translate-y-4 animate-float-slow">
                 <Image
-                  src="/hero-flower-new.png"
+                  src="/hero-flower-new.webp"
                   alt="Artisanal Luxury Bouquet of Fresh Flowers"
                   fill
                   priority
