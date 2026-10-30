@@ -103,7 +103,7 @@ export function ProductCatalog({
         </div>
       </div>
 
-      {/* Loading State Skeleton Modern */}
+      {/* Loading State Skeleton Modern (Cepat & Responsif) */}
       {isLoading ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {[1, 2, 3, 4].map((i) => (
@@ -113,10 +113,10 @@ export function ProductCatalog({
       ) : favoriteProducts.length > 0 ? (
         <>
           <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory scrollbar-none">
-            {favoriteProducts.map((product, idx) => (
+            {favoriteProducts.map((product) => (
               <div
                 key={product.id}
-                className={`reveal-on-scroll ${idx % 4 === 1 ? 'delay-100' : idx % 4 === 2 ? 'delay-150' : idx % 4 === 3 ? 'delay-200' : ''} w-[calc((100vw-32px-12px)/2)] min-w-[150px] max-w-[210px] sm:w-auto sm:min-w-0 sm:max-w-none shrink-0 snap-start flex`}
+                className="w-[calc((100vw-32px-12px)/2)] min-w-[150px] max-w-[210px] sm:w-auto sm:min-w-0 sm:max-w-none shrink-0 snap-start flex"
               >
                 <ProductCard
                   product={product}
@@ -128,7 +128,7 @@ export function ProductCatalog({
           </div>
 
           {/* Tombol Lihat Semua Koleksi */}
-          <div className="reveal-on-scroll delay-100 mt-10 sm:mt-14 flex flex-col items-center justify-center text-center">
+          <div className="mt-10 sm:mt-14 flex flex-col items-center justify-center text-center">
             <Link
               href="/collections"
               className="inline-flex items-center justify-center px-7 py-3 rounded-full bg-[#E60067] hover:bg-[#CC005A] text-white text-xs sm:text-sm font-semibold tracking-wide transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] shadow-sm hover:shadow-md"

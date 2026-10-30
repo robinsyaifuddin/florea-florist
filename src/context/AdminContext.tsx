@@ -53,9 +53,11 @@ export function AdminProvider({
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(() => {
+    // Jika server SSR sudah memasok produk, tidak perlu loading
     if (initialProducts && initialProducts.length > 0) {
       return false;
     }
+    // Jika di browser ada cache localStorage yang valid, tidak perlu loading
     if (typeof window !== 'undefined') {
       try {
         const cached = localStorage.getItem('florea_cached_products');
@@ -64,7 +66,8 @@ export function AdminProvider({
         }
       } catch {}
     }
-    return false; // Jangan blokir layar jika data kosong
+    // Jika belum ada data sama sekali, tampilkan loading skeleton
+    return true;
   });
 
   const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(true);
