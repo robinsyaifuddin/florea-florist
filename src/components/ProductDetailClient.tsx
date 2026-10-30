@@ -14,7 +14,7 @@ import {
   Clock,
   ArrowLeft
 } from 'lucide-react';
-import { Product, getCategoryLabel } from '@/data/products';
+import { Product, getCategoryLabel, getCategoryShortLabel } from '@/data/products';
 import { ProductCard } from '@/components/ProductCard';
 
 interface ProductDetailClientProps {
@@ -175,7 +175,7 @@ Mohon konfirmasi ketersediaan slot rangkaian dan jadwal pengirimannya. Terima ka
           {/* Category Badge */}
           <div className="flex flex-wrap items-center gap-1.5 mb-1">
             <span className="text-[10px] uppercase font-semibold tracking-wider text-[#E60067]">
-              {getCategoryLabel(product)}
+              {getCategoryShortLabel(product)}
             </span>
           </div>
 
@@ -219,19 +219,19 @@ Mohon konfirmasi ketersediaan slot rangkaian dan jadwal pengirimannya. Terima ka
                     key={s.id}
                     type="button"
                     onClick={() => setSelectedSizeIndex(idx)}
-                    className={`w-full p-2.5 border text-left flex items-center justify-between transition-colors cursor-pointer rounded-none ${
+                    className={`w-full p-2.5 border text-left flex items-center justify-between transition-all duration-150 cursor-pointer rounded-xl ${
                       isSelected
                         ? 'border-stone-900 bg-stone-50 font-medium'
-                        : 'border-stone-300 bg-white hover:border-stone-400'
+                        : 'border-stone-200/90 bg-white hover:border-stone-400'
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
                       <div
-                        className={`w-3.5 h-3.5 border flex items-center justify-center rounded-none transition-colors ${
+                        className={`w-3.5 h-3.5 border flex items-center justify-center rounded-full transition-colors ${
                           isSelected ? 'border-stone-900 bg-stone-900' : 'border-stone-400 bg-white'
                         }`}
                       >
-                        {isSelected && <div className="w-1.5 h-1.5 bg-white" />}
+                        {isSelected && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                       </div>
                       <span className="text-xs text-stone-900">{s.name}</span>
                     </div>
@@ -248,7 +248,6 @@ Mohon konfirmasi ketersediaan slot rangkaian dan jadwal pengirimannya. Terima ka
               <label htmlFor="card-msg" className="text-[10px] font-semibold text-stone-900 uppercase tracking-wider">
                 Kartu Ucapan Kaligrafi Eksklusif (Gratis)
               </label>
-              <span className="text-[9px] text-stone-400">Amplop linen & wax seal mewah</span>
             </div>
             <textarea
               id="card-msg"
@@ -256,37 +255,39 @@ Mohon konfirmasi ketersediaan slot rangkaian dan jadwal pengirimannya. Terima ka
               value={cardMessage}
               onChange={(e) => setCardMessage(e.target.value)}
               placeholder="Tuliskan pesan tulus Anda di sini..."
-              className="w-full text-xs p-2 rounded-none border border-stone-300 focus:outline-none focus:border-stone-900 bg-white resize-none transition-colors"
+              className="w-full text-xs p-2.5 rounded-xl border border-stone-200/90 focus:outline-none focus:border-stone-900 bg-white resize-none transition-colors"
             />
           </div>
 
           {/* Quantity, CTA Button, & Share */}
-          <div className="flex items-center gap-2 pt-2.5 border-t border-stone-200/80 mb-3">
+          <div className="flex items-center gap-2.5 pt-3 border-t border-stone-200/80 mb-3.5">
             {/* Quantity Selector */}
-            <div className="flex items-center border border-stone-300 rounded-none bg-white shrink-0">
+            <div className="flex items-center border border-stone-200/90 rounded-full bg-stone-50/60 p-0.5 shrink-0 shadow-2xs">
               <button
                 type="button"
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                className="w-7 h-7 flex items-center justify-center rounded-none hover:bg-stone-100 text-stone-700 transition"
+                aria-label="Kurangi jumlah"
+                className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-white text-stone-600 hover:text-stone-900 transition-colors duration-150 active:scale-95"
               >
-                <Minus className="w-3 h-3" />
+                <Minus className="w-3.5 h-3.5" />
               </button>
-              <span className="w-7 text-center text-xs font-semibold text-stone-900">
+              <span className="w-8 text-center text-xs font-semibold text-stone-900 select-none">
                 {quantity}
               </span>
               <button
                 type="button"
                 onClick={() => setQuantity((q) => q + 1)}
-                className="w-7 h-7 flex items-center justify-center rounded-none hover:bg-stone-100 text-stone-700 transition"
+                aria-label="Tambah jumlah"
+                className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-white text-stone-600 hover:text-stone-900 transition-colors duration-150 active:scale-95"
               >
-                <Plus className="w-3 h-3" />
+                <Plus className="w-3.5 h-3.5" />
               </button>
             </div>
 
             {/* Tombol Pesan Sekarang */}
             <button
               onClick={handleOrderWhatsApp}
-              className="flex-1 py-2.5 sm:py-3 px-4 sm:px-6 rounded-none bg-[#E60067] hover:bg-[#CC005A] text-white text-xs sm:text-sm font-semibold tracking-wide flex items-center justify-center transition duration-150 active:scale-[0.98] cursor-pointer min-w-0"
+              className="flex-1 py-2.5 sm:py-3 px-5 sm:px-6 rounded-full bg-[#E60067] hover:bg-[#CC005A] text-white text-xs sm:text-sm font-semibold tracking-wide flex items-center justify-center transition-all duration-150 hover:shadow-md hover:shadow-pink-500/10 active:scale-[0.98] cursor-pointer min-w-0"
             >
               <span className="truncate">Pesan Sekarang</span>
             </button>
@@ -295,12 +296,13 @@ Mohon konfirmasi ketersediaan slot rangkaian dan jadwal pengirimannya. Terima ka
             <button
               onClick={handleCopyLink}
               title="Bagikan Tautan Produk"
-              className="p-2 sm:p-2.5 rounded-none border border-stone-300 hover:border-stone-400 text-stone-700 bg-white transition flex items-center justify-center active:scale-95 cursor-pointer shrink-0"
+              aria-label="Bagikan Tautan Produk"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-stone-200/90 hover:border-stone-400 text-stone-700 bg-white transition-all duration-150 flex items-center justify-center active:scale-95 hover:bg-stone-50 cursor-pointer shrink-0 shadow-2xs"
             >
               {copiedLink ? (
-                <Check className="w-3.5 h-3.5 text-emerald-600" />
+                <Check className="w-4 h-4 text-emerald-600" />
               ) : (
-                <Share2 className="w-3.5 h-3.5" />
+                <Share2 className="w-4 h-4" />
               )}
             </button>
           </div>
@@ -327,24 +329,24 @@ Mohon konfirmasi ketersediaan slot rangkaian dan jadwal pengirimannya. Terima ka
           </h3>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
               <tbody>
                 <tr className="border-b border-stone-100">
-                  <td className="py-2.5 text-stone-500 font-medium w-1/3">Kategori & Material</td>
-                  <td className="py-2.5 text-stone-900 font-semibold">{getCategoryLabel(product)} ({product.material})</td>
+                  <td className="py-2.5 pr-4 sm:pr-6 text-stone-500 font-medium w-1/3 whitespace-nowrap align-top">Kategori & Material</td>
+                  <td className="py-2.5 text-stone-900 font-semibold">{getCategoryShortLabel(product)} ({product.material})</td>
                 </tr>
                 <tr className="border-b border-stone-100">
-                  <td className="py-2.5 text-stone-500 font-medium">Gaya Rangkaian</td>
+                  <td className="py-2.5 pr-4 sm:pr-6 text-stone-500 font-medium align-top whitespace-nowrap">Gaya Rangkaian</td>
                   <td className="py-2.5 text-stone-900 font-semibold">Korean Haute Couture Floral Architecture</td>
                 </tr>
                 <tr className="border-b border-stone-100">
-                  <td className="py-2.5 text-stone-500 font-medium">Kemasan & Sentuhan Akhir</td>
+                  <td className="py-2.5 pr-4 sm:pr-6 text-stone-500 font-medium align-top whitespace-nowrap">Kemasan & Sentuhan Akhir</td>
                   <td className="py-2.5 text-stone-900 font-semibold">Premium Matte Wrapping Paper, Pita Satin Lembut & Kartu Kaligrafi</td>
                 </tr>
                 <tr>
-                  <td className="py-2.5 text-stone-500 font-medium">Momen Paling Tepat</td>
+                  <td className="py-2.5 pr-4 sm:pr-6 text-stone-500 font-medium align-top whitespace-nowrap">Momen Paling Tepat</td>
                   <td className="py-2.5 text-stone-900 font-semibold">Wisuda Kehormatan, Anniversary, Pernikahan, Ulang Tahun Berkesan & Apresiasi Personal</td>
                 </tr>
               </tbody>

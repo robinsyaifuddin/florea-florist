@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+import { FAQAccordion, FAQItem } from '@/components/FAQAccordion';
 import { 
   MapPin, 
   Phone, 
@@ -17,26 +18,34 @@ export const metadata: Metadata = {
   description: 'Layanan konsultasi concierge Floréa Florist, lokasi studio workshop, jadwal pemesanan, kontak resmi WhatsApp, dan panduan pemesanan buket abadi.',
 };
 
-const faqs = [
+const faqs: FAQItem[] = [
   {
-    q: 'Apakah keindahan dan bentuk rangkaian bunga ini bertahan selamanya?',
-    a: 'Tentu. Seluruh mahakarya Floréa dikurasi khusus menggunakan perpaduan silk sutra velvet grade couture dan preserved botanical foliage. Rangkaian ini tidak akan pernah layu, tidak membutuhkan air, bebas serbuk sari, dan rona warnanya tetap anggun sepanjang masa.'
+    q: 'Bagaimana cara melakukan pemesanan buket di Floréa?',
+    a: 'Pilih mahakarya buket yang Anda inginkan di halaman katalog, tentukan ukuran serta pesan ucapan, lalu tekan tombol "Pesan Sekarang". Anda akan langsung terhubung ke WhatsApp Florist Concierge kami dengan format pesanan yang terisi otomatis untuk konfirmasi detail, opsi pembayaran, dan jadwal pengiriman.'
   },
   {
-    q: 'Dapatkah saya mengkustomisasi nuansa warna wrap, jenis bunga, dan pita?',
-    a: 'Dengan senang hati. Florist kami memberikan kebebasan bagi Anda untuk mengombinasikan warna Korean matte paper, warna pita satin, hingga jenis bunga sesuai impresi dan pesan mendalam yang ingin Anda sampaikan.'
+    q: 'Apakah bisa memesan desain kustom (request warna wrap, bunga, atau pita)?',
+    a: 'Sangat bisa. Master Florist kami siap membantu mewujudkan rangkaian sesuai impian Anda. Anda dapat mendiskusikan palet warna wrapping paper (matte Korean paper), kombinasi jenis bunga sutra/preserved, serta warna pita satin khusus langsung melalui WhatsApp.'
   },
   {
-    q: 'Bagaimana keamanan pengiriman jarak jauh ke luar kota di seluruh Indonesia?',
-    a: 'Setiap karya dilindungi hard-box struktural double-wall khusus anti guncang dengan dudukan presisi. Kami menjamin buket sampai di tangan penerima di seluruh Indonesia dalam kondisi prima, megah, dan sempurna.'
+    q: 'Berapa lama estimasi pengerjaan dan pengiriman?',
+    a: 'Untuk buket ready-stock tersedia layanan Same-Day Delivery (pengiriman di hari yang sama via kurir instan/sameday). Sedangkan untuk pesanan custom atau gubahan khusus, proses pengerjaan membutuhkan waktu 1–2 hari kerja demi menjaga kerapian dan kualitas presisi rangkaian.'
   },
   {
-    q: 'Berapa lama estimasi pengerjaan dan pengiriman sampai ke tujuan?',
-    a: 'Untuk koleksi kurasi siap kirim, kami menyediakan layanan Same-Day Delivery instan. Sementara untuk kreasi kustom personal, Master Florist kami memerlukan waktu 1–2 hari kerja untuk merangkai setiap helai dengan ketelitian tertinggi.'
+    q: 'Bagaimana keamanan pengiriman jarak jauh ke luar kota?',
+    a: 'Pengiriman ke luar kota menggunakan hard-box double-wall khusus florist tebal dengan internal lock/dudukan penyangga kokoh di bagian tangkai agar posisi buket tidak bergeser saat transit. Kami memastikan buket sampai dengan bentuk mekar yang tetap anggun dan sempurna.'
   },
   {
-    q: 'Bagaimana langkah termudah untuk melakukan pemesanan atau konsultasi?',
-    a: 'Anda dapat menekan tombol konsultasi atau pesan di katalog untuk langsung terhubung dengan Concierge WhatsApp kami. Kami akan mendampingi Anda memilih rangkaian yang paling merepresentasikan perasaan Anda.'
+    q: 'Bagaimana prosedur jika terjadi kendala, kerusakan barang, atau komplain?',
+    a: 'Kepuasan Anda adalah prioritas utama kami. Apabila buket tiba dalam keadaan rusak akibat kendala pengiriman atau terdapat ketidaksesuaian pesanan, harap kirimkan foto/video unboxing ke WhatsApp resmi kami dalam 1x24 jam setelah paket diterima. Tim kami akan segera menindaklanjuti dengan solusi terbaik, mulai dari penggantian produk hingga penyesuaian yang memuaskan.'
+  },
+  {
+    q: 'Apakah bunga artificial & preserved ini bertahan selamanya?',
+    a: 'Ya, rangkaian bunga Floréa dibuat dari silk sutra velvet grade couture dan preserved real botanicals yang tidak akan pernah layu, tidak perlu disiram air, bebas serbuk sari (aman dari alergi), serta warna mahkotanya tetap memikat tahan bertahun-tahun.'
+  },
+  {
+    q: 'Metode pembayaran apa saja yang diterima?',
+    a: 'Kami menerima pembayaran melalui Transfer Bank resmi (BCA, Mandiri, BRI, BNI), QRIS, serta dompet digital (GoPay, OVO, ShopeePay). Pembayaran terkonfirmasi sebelum pesanan kami proses dan kami kirimkan bukti foto buket sebelum diberangkatkan.'
   }
 ];
 
@@ -219,7 +228,7 @@ export default function ContactPage() {
         {/* Section: FAQ Pertanyaan yang Sering Diajukan */}
         <section className="py-14 sm:py-20 bg-white border-t border-stone-200/80">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-xl mx-auto mb-12">
+            <div className="text-center max-w-xl mx-auto mb-10 sm:mb-12">
               <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-rose-50 text-[#E60067] mb-3">
                 <HelpCircle className="w-5 h-5" />
               </div>
@@ -227,25 +236,12 @@ export default function ContactPage() {
                 Pertanyaan yang Sering Diajukan (FAQ)
               </h2>
               <p className="text-xs sm:text-sm text-stone-500 mt-2">
-                Jawaban seputar buket bunga artificial, proses custom, serta tata cara pengiriman Floréa.
+                Informasi lengkap seputar pemesanan buket, custom rangkaian, tata cara pengiriman, hingga garansi komplain.
               </p>
             </div>
 
-            <div className="divide-y divide-stone-200 border-y border-stone-200">
-              {faqs.map((faq, idx) => (
-                <div key={idx} className="py-6 sm:py-7">
-                  <h3 className="text-sm sm:text-base font-semibold text-stone-900 flex items-start gap-3">
-                    <span className="text-xs font-mono font-medium text-[#E60067] bg-rose-50 px-2 py-0.5 rounded mt-0.5">
-                      Q{idx + 1}
-                    </span>
-                    <span>{faq.q}</span>
-                  </h3>
-                  <p className="text-xs sm:text-[13px] text-stone-600 leading-relaxed mt-2.5 pl-8 sm:pl-9">
-                    {faq.a}
-                  </p>
-                </div>
-              ))}
-            </div>
+            {/* Accordion FAQ Interaktif dengan Toggle Panah */}
+            <FAQAccordion items={faqs} />
 
             {/* Banner Bantuan Chat Tambahan */}
             <div className="mt-12 text-center bg-[#FAF8F5] rounded-2xl p-6 sm:p-8 border border-stone-200/80">

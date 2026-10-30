@@ -127,13 +127,6 @@ export default function CollectionsClient() {
                   Jelajahi setiap rangkaian buket bunga sutra velvet & preserved botanicals premium yang dirancang eksklusif untuk setiap perayaan abadi Anda.
                 </p>
               </div>
-
-              <Link
-                href="/"
-                className="self-start md:self-auto inline-flex items-center justify-center text-xs font-semibold text-[#E60067] hover:text-[#B80053] px-5 py-2.5 rounded-full bg-pink-50/70 border border-pink-200/60 hover:bg-pink-100/70 transition-all duration-150 active:scale-[0.98]"
-              >
-                Kembali ke Beranda
-              </Link>
             </div>
 
             {/* RINGKASAN JUMLAH KOLEKSI - Minimalis sebaris di Mobile, Card rapi di Desktop */}
