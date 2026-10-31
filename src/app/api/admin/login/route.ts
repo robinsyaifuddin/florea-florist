@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     }
 
     // Buat session token aman berlaku 30 hari
-    const token = createSessionToken();
+    const token = await createSessionToken();
 
     const response = NextResponse.json({ success: true, message: 'Login berhasil' });
 

@@ -7,7 +7,7 @@ export async function GET() {
     const cookieStore = await cookies();
     const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
 
-    const isValid = verifySessionToken(token);
+    const isValid = await verifySessionToken(token);
 
     return NextResponse.json({ authenticated: isValid });
   } catch (error) {
