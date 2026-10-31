@@ -1,6 +1,5 @@
 import { createClient } from './client';
 import { Product, PRODUCTS } from '@/data/products';
-import { revalidateTag } from 'next/cache';
 
 // Mapping helper dari snake_case (Supabase) ke camelCase (TypeScript Product)
 export function mapSupabaseToProduct(row: any): Product {
