@@ -2,15 +2,99 @@ import { Product } from './products';
 
 export const SUPABASE_SYNCED_PRODUCTS: Product[] = [
   {
+    "id": "rustic-autumn-whispers-dried-bouquet-1581",
+    "name": "Rustic Autumn Whispers Dried Bouquet",
+    "category": "artistic",
+    "categoryLabel": "Pesona Puspa Abadi (Koleksi Buket Bunga Artistik)",
+    "price": 190000,
+    "originalPrice": 230000,
+    "image": "",
+    "gallery": [],
+    "isPopular": false,
+    "material": "",
+    "durability": "",
+    "description": "",
+    "inStock": true,
+    "rating": 5,
+    "reviewCount": 0,
+    "sizes": [
+      {
+        "id": "standard",
+        "name": "",
+        "price": 190000
+      },
+      {
+        "id": "deluxe",
+        "name": "",
+        "price": 0
+      },
+      {
+        "id": "premium",
+        "name": "",
+        "price": 0
+      }
+    ],
+    "colors": [],
+    "details": {
+      "occasion": "",
+      "packaging": "",
+      "flowerType": "",
+      "bouquetSize": "Tinggi ~45cm x Lebar ~35cm",
+      "arrangementStyle": ""
+    }
+  },
+  {
+    "id": "rustic-autumn-whispers-dried-bouquet-4108",
+    "name": "Rustic Autumn Whispers Dried Bouquet",
+    "category": "celebration",
+    "categoryLabel": "Gubahan Selebrasi Megah (Koleksi Perayaan & Momen Akbar)",
+    "price": 190000,
+    "originalPrice": 220000,
+    "image": "",
+    "gallery": [],
+    "isPopular": false,
+    "material": "Natural Dried Bunny Tails (Lagurus), Caspea, Baby's Breath, & Wood Flowers",
+    "durability": "",
+    "description": "Keindahan yang terhenti dalam waktu. Harmoni bunga kering bernuansa rustik alami yang tahan lama, membisikkan kenangan manis yang tak akan pernah pudar oleh waktu.",
+    "inStock": true,
+    "rating": 5,
+    "reviewCount": 0,
+    "sizes": [
+      {
+        "id": "standard",
+        "name": "Standard (Small-Medium)",
+        "price": 190000
+      },
+      {
+        "id": "deluxe",
+        "name": "Deluxe (Medium-Large) (+Rp 55.000)",
+        "price": 245000
+      },
+      {
+        "id": "premium",
+        "name": "Premium (Extra Dried Foliage) (+Rp 100.000)",
+        "price": 290000
+      }
+    ],
+    "colors": [],
+    "details": {
+      "occasion": "Dekorasi Rumah, Pernikahan, Wisuda, Anniversary, & Hadiah Estetik",
+      "packaging": "Soft Brown Translucent Paper, White Satin & Organza Ribbon",
+      "flowerType": "Natural Dried Bunny Tails (Lagurus), Caspea, Baby's Breath, & Wood Flowers",
+      "bouquetSize": "Tinggi ~45cm x Lebar ~35cm",
+      "arrangementStyle": "Rustik-Vintage Cascade Hand-Tied"
+    }
+  },
+  {
     "id": "sapphire-glow-luxury-skincare-bouquet-1063",
     "name": "Sapphire Glow & Luxury Skincare Bouquet",
     "category": "personal",
     "categoryLabel": "Tanda Kasih & Kenangan (Koleksi Personalisasi & Hadiah Spesial)",
     "price": 285000,
     "originalPrice": 335000,
-    "image": "/uploads/sapphire-glow-luxury-skincare-bouquet-1063-1.webp",
+    "image": "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/sapphire-glow-luxury-skincare-bouquet-1063-main.webp",
     "gallery": [
-      "/uploads/sapphire-glow-luxury-skincare-bouquet-1063-gal-2.webp"
+      "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/sapphire-glow-luxury-skincare-bouquet-1063-gal-1.webp"
     ],
     "isPopular": false,
     "material": "Velvet-Satin Sapphire Rose with Glitter, White Organza Net, & Slot Hadiah",
@@ -52,9 +136,9 @@ export const SUPABASE_SYNCED_PRODUCTS: Product[] = [
     "categoryLabel": "Pesona Puspa Abadi (Koleksi Buket Bunga Artistik)",
     "price": 165000,
     "originalPrice": 195000,
-    "image": "/uploads/amora-blush-singular-rose-bouquet-5487-3.webp",
+    "image": "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/amora-blush-singular-rose-bouquet-5487-main.webp",
     "gallery": [
-      "/uploads/amora-blush-singular-rose-bouquet-5487-gal-4.webp"
+      "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/amora-blush-singular-rose-bouquet-5487-gal-1.webp"
     ],
     "isPopular": false,
     "material": "Fresh Cut Rose, Chrysanthemum & White Aster Stems",
@@ -96,9 +180,9 @@ export const SUPABASE_SYNCED_PRODUCTS: Product[] = [
     "categoryLabel": "Tanda Kasih & Kenangan (Koleksi Personalisasi & Hadiah Spesial)",
     "price": 240000,
     "originalPrice": 295000,
-    "image": "/uploads/luminous-love-polaroid-led-bouquet-5.jpg",
+    "image": "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/luminous-love-polaroid-led-bouquet-main.webp",
     "gallery": [
-      "/uploads/luminous-love-polaroid-led-bouquet-gal-6.jpg"
+      "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/luminous-love-polaroid-led-bouquet-gal-1.webp"
     ],
     "isPopular": true,
     "material": "Premium Red Silk Roses, Micro Warm-White Fairy Lights & High-Gloss Photo Prints",
@@ -150,9 +234,9 @@ export const SUPABASE_SYNCED_PRODUCTS: Product[] = [
     "categoryLabel": "Pesona Puspa Abadi (Koleksi Buket Bunga Artistik)",
     "price": 210000,
     "originalPrice": 260000,
-    "image": "/uploads/enchanted-butterfly-pastel-symphony-7.jpg",
+    "image": "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/enchanted-butterfly-pastel-symphony-main.webp",
     "gallery": [
-      "/uploads/enchanted-butterfly-pastel-symphony-gal-8.jpg"
+      "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/enchanted-butterfly-pastel-symphony-gal-1.webp"
     ],
     "isPopular": false,
     "material": "Silk Rose, Pom-pom Chrysanthemum, Dried Caspea & 3D Paper/Acrylic Butterfly",
@@ -204,9 +288,9 @@ export const SUPABASE_SYNCED_PRODUCTS: Product[] = [
     "categoryLabel": "Gubahan Selebrasi Megah (Koleksi Perayaan & Momen Akbar)",
     "price": 135000,
     "originalPrice": 170000,
-    "image": "/uploads/orchid-heritage-floral-sash-lei-9.jpg",
+    "image": "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/orchid-heritage-floral-sash-lei-main.webp",
     "gallery": [
-      "/uploads/orchid-heritage-floral-sash-lei-gal-10.jpg"
+      "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/orchid-heritage-floral-sash-lei-gal-1.webp"
     ],
     "isPopular": true,
     "material": "Fabric Orchid & Carnation Florets, Faux Pearl Chains, & Satin Ribbon Base",
@@ -258,9 +342,9 @@ export const SUPABASE_SYNCED_PRODUCTS: Product[] = [
     "categoryLabel": "Tanda Kasih & Kenangan (Koleksi Personalisasi & Hadiah Spesial)",
     "price": 165000,
     "originalPrice": 195000,
-    "image": "/uploads/sweet-bear-delight-bloom-bag-11.jpg",
+    "image": "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/sweet-bear-delight-bloom-bag-main.webp",
     "gallery": [
-      "/uploads/sweet-bear-delight-bloom-bag-gal-12.jpg"
+      "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/sweet-bear-delight-bloom-bag-gal-1.webp"
     ],
     "isPopular": true,
     "material": "Artificial Lily & Daisy Stems, Cokelat SilverQueen Asli, & PVC Bag Handle",
@@ -312,9 +396,9 @@ export const SUPABASE_SYNCED_PRODUCTS: Product[] = [
     "categoryLabel": "Gubahan Selebrasi Megah (Koleksi Perayaan & Momen Akbar)",
     "price": 310000,
     "originalPrice": 380000,
-    "image": "/uploads/serene-waterfall-cascade-bouquet-13.jpg",
+    "image": "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/serene-waterfall-cascade-bouquet-main.webp",
     "gallery": [
-      "/uploads/serene-waterfall-cascade-bouquet-gal-14.jpg"
+      "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/serene-waterfall-cascade-bouquet-gal-1.webp"
     ],
     "isPopular": true,
     "material": "Latex Real-Touch Blue Orchids, Silk Lilies & Hydrangea Accents",
@@ -366,9 +450,9 @@ export const SUPABASE_SYNCED_PRODUCTS: Product[] = [
     "categoryLabel": "Pesona Puspa Abadi (Koleksi Buket Bunga Artistik)",
     "price": 145000,
     "originalPrice": 180000,
-    "image": "/uploads/whimsical-chenille-artisan-bouquet-15.jpg",
+    "image": "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/whimsical-chenille-artisan-bouquet-main.webp",
     "gallery": [
-      "/uploads/whimsical-chenille-artisan-bouquet-gal-16.jpg"
+      "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/whimsical-chenille-artisan-bouquet-gal-1.webp"
     ],
     "isPopular": false,
     "material": "100% Handcrafted Chenille Wire / Pipe Cleaner Stems & Faux Pearls",
@@ -420,9 +504,9 @@ export const SUPABASE_SYNCED_PRODUCTS: Product[] = [
     "categoryLabel": "Pesona Puspa Abadi (Koleksi Buket Bunga Artistik)",
     "price": 195000,
     "originalPrice": 240000,
-    "image": "/uploads/midnight-sapphire-artificial-cascade-17.jpg",
+    "image": "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/midnight-sapphire-artificial-cascade-main.webp",
     "gallery": [
-      "/uploads/midnight-sapphire-artificial-cascade-gal-18.jpg"
+      "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/midnight-sapphire-artificial-cascade-gal-1.webp"
     ],
     "isPopular": false,
     "material": "Premium Velvet/Fabric Rose & Natural Dried Caspea/Baby Breath",
@@ -474,9 +558,9 @@ export const SUPABASE_SYNCED_PRODUCTS: Product[] = [
     "categoryLabel": "Gubahan Selebrasi Megah (Koleksi Perayaan & Momen Akbar)",
     "price": 450000,
     "originalPrice": 550000,
-    "image": "/uploads/grand-sovereign-fan-money-bouquet-19.jpg",
+    "image": "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/grand-sovereign-fan-money-bouquet-main.webp",
     "gallery": [
-      "/uploads/grand-sovereign-fan-money-bouquet-gal-20.jpg"
+      "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/grand-sovereign-fan-money-bouquet-gal-1.webp"
     ],
     "isPopular": false,
     "material": "Uang Asli Terproteksi Plastik OPP, Artificial Floral Base & Stand Kaki Penopang",
@@ -528,9 +612,9 @@ export const SUPABASE_SYNCED_PRODUCTS: Product[] = [
     "categoryLabel": "Pesona Puspa Abadi (Koleksi Buket Bunga Artistik)",
     "price": 175000,
     "originalPrice": 210000,
-    "image": "/uploads/sweet-meadow-fresh-bloom-21.jpg",
+    "image": "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/sweet-meadow-fresh-bloom-main.webp",
     "gallery": [
-      "/uploads/sweet-meadow-fresh-bloom-gal-22.jpg"
+      "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/sweet-meadow-fresh-bloom-gal-1.webp"
     ],
     "isPopular": true,
     "material": "Fresh Cut Rose, Aster, Chrysanthemum & Solidago Stems",
@@ -582,9 +666,9 @@ export const SUPABASE_SYNCED_PRODUCTS: Product[] = [
     "categoryLabel": "Pesona Puspa Abadi (Koleksi Buket Bunga Artistik)",
     "price": 285000,
     "originalPrice": 335000,
-    "image": "/uploads/royal-amethyst-glittering-rose-23.jpg",
+    "image": "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/royal-amethyst-glittering-rose-main.webp",
     "gallery": [
-      "/uploads/royal-amethyst-glittering-rose-gal-24.jpg"
+      "https://eubasebfolsrxyfhvghq.supabase.co/storage/v1/object/public/florea-products/royal-amethyst-glittering-rose-gal-1.webp"
     ],
     "isPopular": true,
     "material": "Satin Ribbon with Glitter Dust Finishing & Faux Pearl Accents",
