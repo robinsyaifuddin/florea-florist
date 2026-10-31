@@ -2,8 +2,9 @@
 
 import { useState, useRef } from 'react';
 import Image from 'next/image';
-import { X, Upload, Image as ImageIcon } from 'lucide-react';
+import { X, Upload, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Product, CATEGORY_LABELS } from '@/data/products';
+import { uploadProductImage } from '@/lib/supabase/storage';
 
 interface ProductFormModalProps {
   isOpen: boolean;
@@ -44,8 +45,8 @@ export default function ProductFormModal({
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Helper konversi file/blob gambar ke format WebP super ringan & tajam
-  const convertToWebP = (blob: Blob): Promise<string> => {
+  // Helper konversi file/blob gambar ke format WebP Blob super ringan & tajam
+  const convertToWebPBlob = (blob: Blob): Promise<Blob> => {
     return new Promise((resolve, reject) => {
       const img = new (window as any).Image();
       const objectUrl = URL.createObjectURL(blob);
@@ -83,9 +84,18 @@ export default function ProductFormModal({
         ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, 0, 0, targetW, targetH);
 
-        // Ekspor ke format WebP terkompresi efisien (kualitas 0.82: visual jernih & bobot file sangat ringan ~40-90KB)
-        const webpDataUrl = canvas.toDataURL('image/webp', 0.82);
-        resolve(webpDataUrl);
+        // Ekspor ke Blob WebP terkompresi efisien (kualitas 0.85: visual jernih & bobot file sangat ringan ~40-90KB)
+        canvas.toBlob(
+          (resultBlob) => {
+            if (resultBlob) {
+              resolve(resultBlob);
+            } else {
+              reject(new Error('Gagal menghasilkan Blob WebP'));
+            }
+          },
+          'image/webp',
+          0.85
+        );
       };
       img.onerror = () => {
         URL.revokeObjectURL(objectUrl);
@@ -137,25 +147,19 @@ export default function ProductFormModal({
         sourceBlob = Array.isArray(converted) ? converted[0] : converted;
       }
 
-      // Konversi otomatis semua format gambar ke WebP HD (0.92) tanpa merusak ketajaman
-      const webpResult = await convertToWebP(sourceBlob);
-      setMainImage(webpResult);
+      // 1. Konversi otomatis semua format gambar ke WebP HD (0.85)
+      const webpBlob = await convertToWebPBlob(sourceBlob);
+
+      // 2. Upload langsung ke Supabase Storage (florea-products bucket)
+      const publicUrl = await uploadProductImage(webpBlob, `product-${Date.now()}.webp`);
+
+      // 3. Simpan URL cloud yang super ringan ke state (bukan base64 panjang!)
+      setMainImage(publicUrl);
       setIsProcessing(false);
     } catch (err: any) {
-      console.error('Error converting image to WebP:', err);
-      // Fallback: baca langsung jika browser sangat lama tidak mendukung canvas WebP
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          setMainImage(reader.result);
-        }
-        setIsProcessing(false);
-      };
-      reader.onerror = () => {
-        setUploadError('Gagal memproses gambar. Silakan coba lagi.');
-        setIsProcessing(false);
-      };
-      reader.readAsDataURL(file);
+      console.error('Error uploading image to Supabase Storage:', err);
+      setUploadError(err.message || 'Gagal mengunggah gambar ke cloud storage. Coba lagi.');
+      setIsProcessing(false);
     }
   };
 
