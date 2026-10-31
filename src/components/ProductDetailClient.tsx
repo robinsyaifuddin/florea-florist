@@ -159,7 +159,7 @@ Mohon konfirmasi ketersediaan slot rangkaian dan jadwal pengirimannya. Terima ka
               WebkitTouchCallout: 'none',
               userSelect: 'none',
             }}
-            className="relative w-full aspect-[4/3] sm:aspect-square md:max-h-[380px] lg:max-h-[400px] bg-stone-100 rounded-2xl overflow-hidden border border-stone-200/80 shadow-2xs group cursor-crosshair select-none"
+            className="relative w-full aspect-square md:max-h-[380px] lg:max-h-[400px] bg-stone-100 rounded-2xl overflow-hidden border border-stone-200/80 shadow-2xs group cursor-crosshair select-none"
           >
             {product.image ? (
               <div
