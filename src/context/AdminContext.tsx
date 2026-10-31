@@ -86,49 +86,26 @@ export function AdminProvider({
     }
   };
 
-  // Ambil data produk terbaru dari API dengan HTTP Cache (ETag / 304 Not Modified)
+  // Ambil data produk terbaru dari database Supabase (background revalidate)
   const refreshProducts = useCallback(async () => {
     try {
-      const res = await fetch('/api/products');
-      if (res.status === 200) {
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
-          setProducts(data);
-          syncToCache(data);
-        }
+      const data = await fetchProductsFromSupabase();
+      if (data && data.length > 0) {
+        setProducts(data);
+        syncToCache(data);
       }
-      // Bila status 304 (Not Modified), browser otomatis menggunakan data yang sudah ada tanpa re-render / tanpa beban data
     } catch (err) {
-      // Fallback ke Supabase langsung jika API lokal gagal
-      try {
-        const data = await fetchProductsFromSupabase();
-        if (data && data.length > 0) {
-          setProducts(data);
-          syncToCache(data);
-        }
-      } catch (e) {
-        console.error('Failed to load products:', e);
-      }
+      console.error('Failed to load products from Supabase:', err);
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    // Jika data dari server sudah ada, sinkronkan ke local cache
-    if (initialProducts && initialProducts.length > 0) {
-      setProducts(initialProducts);
-      syncToCache(initialProducts);
-    }
-  }, [initialProducts]);
-
-  useEffect(() => {
     checkSession();
-    // Hanya re-fetch dari background jika belum ada data initial
-    if (!initialProducts || initialProducts.length === 0) {
-      refreshProducts();
-    }
-  }, [checkSession, refreshProducts, initialProducts]);
+    // Selalu sinkronkan dengan database Supabase saat web dibuka/refresh
+    refreshProducts();
+  }, [checkSession, refreshProducts]);
 
   // Real-time synchronization via Supabase Realtime & Cross-tab BroadcastChannel
   useEffect(() => {

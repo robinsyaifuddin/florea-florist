@@ -1,6 +1,6 @@
 import { createClient } from './client';
 import { Product, PRODUCTS } from '@/data/products';
-import { unstable_cache } from 'next/cache';
+import { revalidateTag } from 'next/cache';
 
 // Mapping helper dari snake_case (Supabase) ke camelCase (TypeScript Product)
 export function mapSupabaseToProduct(row: any): Product {
@@ -97,30 +97,13 @@ async function fetchProductByIdRaw(id: string): Promise<Product | null> {
   }
 }
 
-// 1. Get All Products (Cached with SWR revalidate for instant response)
-export const getCachedProducts = unstable_cache(
-  async () => fetchProductsRaw(),
-  ['all-products-cache'],
-  { revalidate: 30, tags: ['products'] }
-);
-
+// 1. Get All Products (Selalu ambil live dari database Supabase dengan fallback instan)
 export async function getProducts(): Promise<Product[]> {
-  // Jika di lingkungan Next.js server, gunakan unstable_cache
-  if (typeof window === 'undefined') {
-    return getCachedProducts();
-  }
   return fetchProductsRaw();
 }
 
-// 2. Get Single Product by ID (Cached)
+// 2. Get Single Product by ID
 export async function getProductById(id: string): Promise<Product | null> {
-  if (typeof window === 'undefined') {
-    return unstable_cache(
-      async (prodId: string) => fetchProductByIdRaw(prodId),
-      [`product-${id}`],
-      { revalidate: 60, tags: ['products', `product-${id}`] }
-    )(id);
-  }
   return fetchProductByIdRaw(id);
 }
 
